@@ -1,0 +1,407 @@
+/* 
+  JCup Specifications for the JCupNFlex Language
+  by Michel Hassenforder, Université de Haute Alsace
+  28 September 2022
+
+  This JavaCup specification is used to implement JCupNFlex itself.
+  It specifies the parser for the JCupNFlex specification language.
+
+  The rules are rooted in the JCup language
+  The regexp rules for the Jcup Terminals are not defined as they are
+  defined in a companion files processed by JFlex.
+  Here the JFlex rules are still ion this file to combine all parts 
+  of a grammar.
+  
+  Author(s)
+	Michel Hassenforder, ENSISA, Université de Haute Alsace
+	michel.hassenforder@uha.fr
+	
+  Revisions
+    v1.0	First released version
+*/
+
+package fr.uha.hassenforder.jcupnflex.reader;
+
+import fr.uha.hassenforder.jcupnflex.ErrorManager;
+import fr.uha.hassenforder.jcupnflex.model.Associativity;
+import fr.uha.hassenforder.jcupnflex.model.Directive;
+import fr.uha.hassenforder.jcupnflex.model.DirectiveSet;
+import fr.uha.hassenforder.jcupnflex.model.Factory;
+import fr.uha.hassenforder.jcupnflex.model.Grammar;
+import fr.uha.hassenforder.jcupnflex.model.GrammarSymbol;
+import fr.uha.hassenforder.jcupnflex.model.NonTerminal;
+import fr.uha.hassenforder.jcupnflex.model.Production;
+import fr.uha.hassenforder.jcupnflex.model.ProductionPart;
+import fr.uha.hassenforder.jcupnflex.model.RegExp;
+import fr.uha.hassenforder.jcupnflex.model.SymbolKind;
+import fr.uha.hassenforder.jcupnflex.model.Terminal;
+
+//import fr.uha.hassenforder.jcupnflex.model.*;
+
+action code {:
+
+/** global variables to store the grammar the directivess and a factory to build various concepts */
+	private Factory factory = new Factory();
+	private Grammar grammar = new Grammar(factory);
+	private DirectiveSet directives = new DirectiveSet();
+
+	/** current kind of symbol to declare */
+	private SymbolKind currentKind;
+	/** current type of symbol to declare */
+	private String currentType;
+
+	/** Current precedence priority */
+	private int currentPriority = 0;
+	/** Current precedence associativity */
+	private Associativity currentAssociativity = Associativity.NO;
+
+	/** update the precedences we are declaring */
+	private void updatePrecedence(Associativity associativity) {
+		this.currentAssociativity = associativity;
+		++this.currentPriority;
+    }
+  
+	private GrammarSymbol lhs = null;
+
+	/** update the lhs symbol of a production */
+	private void updateLhs(GrammarSymbol lhs) {
+		this.lhs = lhs;
+    }
+  
+	private GrammarSymbol getKnownSymbol(com.github.jhoenicke.javacup.runtime.Symbol location, String id) {
+		GrammarSymbol sym = grammar.getSymbol(id);
+		if (sym == null) {
+			ErrorManager.getManager().emit_warning("Symbol \"" + id + "\" has not been declared", location);
+		}
+		return sym;
+	}
+  
+	private Terminal getKnownTerminal(com.github.jhoenicke.javacup.runtime.Symbol location, String id) {
+		Terminal sym = grammar.getTerminal(id);
+		if (sym == null) {
+			ErrorManager.getManager().emit_warning("Terminal \"" + id + "\" has not been declared", location);
+		}
+		return sym;
+	}
+  
+	private NonTerminal getKnownNonTerminal(com.github.jhoenicke.javacup.runtime.Symbol location, String id) {
+		NonTerminal sym = grammar.getNonTerminal(id);
+		if (sym == null) {
+			ErrorManager.getManager().emit_warning("Non terminal \"" + id + "\" has not been declared", location);
+		}
+		return sym;
+	}
+    
+:};
+
+// Grammar lexic
+terminal	SEMICOLON, COMMA, COLON, COLON_COLON_EQUALS, BAR, PERCENT_PREC;
+// Directive lexic
+terminal	DOT, LBRACK, RBRACK, GT, LT;
+// EBNF operators
+terminal	STAR, PLUS, QUESTION, EQUALS, LPARENT, RPARENT;
+
+terminal String	PACKAGE, IMPORT, CODE, ACTION, PARSER, TERMINAL, NONTERMINAL, INIT, 
+				SCAN, WITH, START, PRECEDENCE, LEFT, RIGHT, NONASSOC, SUPER, EXTENDS, 
+				AFTER, REDUCE, OPTION, EXPECT;
+
+terminal String ID, CODE_STRING;
+
+terminal String REGEXP;
+
+nonterminal	spec;
+nonterminal	package_spec;
+nonterminal parser_spec;
+nonterminal import_spec;
+nonterminal option_spec, option_list, option_;
+nonterminal custom_code_spec;
+nonterminal symbol_spec, symbol_decl, symbol_kind, symbol_type, symbol_list, new_symbol_id;
+nonterminal precedence_spec, precedence_list, precterminal_id, associativity_decl;
+nonterminal expect_spec;
+nonterminal start_spec;
+nonterminal production_spec, lhs, rhs_list, rhs;
+nonterminal ProductionPart wild_symbol_id;
+
+nonterminal Grammar grammar;
+
+nonterminal Directive key_code;
+
+nonterminal String  symbol_id, label_id, robust_id;
+nonterminal StringBuilder multipart_id, import_id, type_id, typearglist, typeargument, wildcard;
+
+nonterminal ProductionPart prod_part;
+nonterminal Terminal prod_precedence;
+
+start with grammar;
+
+grammar				::=	( spec SEMICOLON ) *				{: RESULT = grammar; :}
+					;
+
+spec				::=	package_spec
+					|	import_spec
+				    |	option_spec
+			    	|	parser_spec
+				    |	custom_code_spec
+					|	symbol_spec
+					|	precedence_spec
+					|	expect_spec
+					|	start_spec
+					|	production_spec
+					|	error
+					;
+
+package_spec		::=	PACKAGE	multipart_id:id
+							{:
+								if ( ! directives.setDirective(Directive.PACKAGE_NAME, id.toString())) {
+									ErrorManager.getManager().emit_warning("Redundant package name (skipping)");
+								}
+							:}
+					;
+
+import_spec			::=	IMPORT import_id:id
+							{:
+								if ( ! directives.addDirective(Directive.IMPORT, id.toString())) {
+									ErrorManager.getManager().emit_warning("Redundant import (skipping)");
+								}
+							:}
+					;
+
+parser_spec			::=	PARSER multipart_id:name
+							{:
+								if ( ! directives.setDirective(Directive.PARSER_NAME, name.toString())) {
+									ErrorManager.getManager().emit_warning("Redundant parser name (skipping)");
+								}
+							:}
+					;
+
+option_spec			::= OPTION option_list
+					;
+
+option_list			::=	option_ ( COMMA option_ ) *
+					;
+
+option_				::=	robust_id:opt
+							{:
+								if ( ! directives.addDirective(Directive.OPTION, opt, null)) {
+									ErrorManager.getManager().emit_warning("Redundant option " + opt + " (skipping)");
+								}
+							:}
+					|	robust_id:opt EQUALS robust_id:val
+							{:
+								if ( ! directives.addDirective(Directive.OPTION, opt, val)) {
+									ErrorManager.getManager().emit_warning("Redundant option " + opt + " = " + val + " (skipping)");
+								}
+							:}
+					;
+
+custom_code_spec	::=	key_code:key CODE_STRING:code
+							{:
+								if ( ! directives.setDirective(key, code)) {
+									ErrorManager.getManager().emit_warning("Redundant " + key + " (skipping)");
+								}
+							:}
+					;
+
+key_code			::=	ACTION CODE							{: RESULT = Directive.ACTION_CODE; :}
+					|	PARSER CODE							{: RESULT = Directive.PARSER_CODE; :}
+					|	INIT WITH							{: RESULT = Directive.INIT_WITH_CODE; :}
+					|	SCAN WITH							{: RESULT = Directive.SCAN_WITH_CODE; :}
+					|	AFTER REDUCE						{: RESULT = Directive.AFTER_REDUCE_CODE; :}
+					;
+					
+symbol_spec			::= symbol_decl symbol_list
+					;
+
+symbol_decl			::=	symbol_kind:kind symbol_type:type
+					|	symbol_kind:kind
+					;
+
+symbol_kind			::=	TERMINAL 							{: currentKind = SymbolKind.TERMINAL; :}
+					|	NONTERMINAL 						{: currentKind = SymbolKind.NONTERMINAL; :}
+					;
+
+symbol_type			::=	type_id:id 		 					{: currentType = id.toString(); :}
+					;
+
+symbol_list			::=	new_symbol_id ( COMMA new_symbol_id ) *
+					;
+
+new_symbol_id		::=	symbol_id:sym_id
+							{: 
+								if (grammar.getSymbol(sym_id) != null) {
+									ErrorManager.getManager().emit_error("Symbol \"" + sym_id + "\" has already been declared", sym_id$);
+								} else {
+									GrammarSymbol symbol = factory.createSymbol(currentKind, sym_id, currentType);
+									if (symbol == null) {
+										ErrorManager.getManager().emit_error("Symbol \"" + sym_id + "\" is not declared", sym_id$);
+									} else {
+										grammar.addUniqueSymbol(symbol);
+									}
+								}
+							:}
+					;
+
+precedence_spec		::= PRECEDENCE associativity_decl precedence_list
+					;
+
+associativity_decl	::= LEFT								{: updatePrecedence(Associativity.LEFT); :}
+		        	|	RIGHT								{: updatePrecedence(Associativity.RIGHT); :}
+					|	NONASSOC							{: updatePrecedence(Associativity.NONE); :}
+					;
+      
+precedence_list		::= precterminal_id ( COMMA precterminal_id )*
+					;
+
+precterminal_id		::= symbol_id:name
+							{:
+								Terminal symbol = getKnownTerminal(name$, name);
+								if (symbol == null) {
+									ErrorManager.getManager().emit_error("Symbol \"" + name + "\" is not declared and cannot be used for precedence", name$);
+								} else {
+									symbol.setPrecedence(currentPriority, currentAssociativity);
+								}
+							:}
+					|	REGEXP:content
+							{:
+								RegExp symbol = grammar.getOrAddRegexp(content);
+								if (symbol == null) {
+									ErrorManager.getManager().emit_error("Regexp \"" + content + "\" cannot be declared for precedence", content$);
+								} else {
+									symbol.setPrecedence(currentPriority, currentAssociativity);
+								}
+							:}
+					;
+	  
+expect_spec			::=	EXPECT robust_id:val
+							{:
+								if ( ! directives.setDirective(Directive.EXPECT, val)) {
+									ErrorManager.getManager().emit_warning("Redundant expect (skipping)");
+								}
+							:}
+					;
+
+start_spec			::=	START WITH symbol_id:name 
+							{:
+								NonTerminal symbol = getKnownNonTerminal(name$, name);
+								if (symbol == null) {
+									ErrorManager.getManager().emit_error("Symbol \"" + name + "\" is not declared for start symbol", name$);
+								} else {
+									grammar.setStartSymbol(symbol); 
+								}
+							:}
+					;
+
+production_spec		::=	lhs COLON_COLON_EQUALS rhs_list
+					;
+
+lhs					::=	symbol_id:lhs_id					{: updateLhs(getKnownSymbol(lhs_id$, lhs_id)); :}
+					;
+
+rhs_list			::=	rhs ( BAR rhs ) *
+					;
+
+rhs					::=	prod_part*:rhs prod_precedence?:precedence 
+							{:
+								if (lhs == null) {
+									ErrorManager.getManager().emit_error("Production without a LHS Symbol", rhs$);
+								} else {
+									Production production = factory.createProduction(lhs, rhs, precedence);
+									grammar.addProduction(production);
+								}
+							:}
+					;
+
+prod_precedence		::=	PERCENT_PREC symbol_id:term			{: RESULT = getKnownTerminal(term$, term); :}
+					;
+
+prod_part			::=	wild_symbol_id:symb label_id?:label	{: RESULT = factory.createSimplePart(symb, label); :}
+					|	CODE_STRING:code					{: RESULT = factory.createActionPart(code); :}
+					;
+
+wild_symbol_id		::=	wild_symbol_id:child STAR			{: RESULT = factory.createMany0Part(child); :} 
+					|	wild_symbol_id:child PLUS			{: RESULT = factory.createMany1Part(child); :} 
+					|	wild_symbol_id:child QUESTION		{: RESULT = factory.createOptionalPart(child); :} 
+					|	symbol_id:symid						{: RESULT = factory.createSymbolPart(getKnownSymbol(symid$, symid)); :}
+					|	REGEXP:content
+							{:
+								RegExp symbol = grammar.getOrAddRegexp(content);
+								if (symbol == null) {
+									ErrorManager.getManager().emit_error("Regexp \"" + content + "\" cannot be used ", content$);
+								} else {
+									symbol.setPrecedence(currentPriority, currentAssociativity);
+								}
+								RESULT = factory.createSymbolPart(symbol);
+							:}
+					|	LPARENT prod_part+:prod RPARENT		{: RESULT = factory.createGroupPart(prod); :}
+					;
+
+label_id			::=	COLON robust_id:label				{: RESULT = label; :}
+					;
+
+multipart_id		::=	robust_id:id						{: RESULT = new StringBuilder(id); :}
+					|	multipart_id:list DOT robust_id:id	{: RESULT = list.append('.').append(id); :}
+					;
+
+import_id			::=	multipart_id:id						{: RESULT = id; :}
+					|	multipart_id:list DOT STAR			{: RESULT = list.append(".*"); :}
+					;
+
+type_id				::= multipart_id:id						{: RESULT = id; :}
+					|	type_id:id LBRACK RBRACK			{: RESULT = id.append("[]"); :}
+					|	multipart_id:id LT typearglist:types GT	{: RESULT = id.append('<').append(types).append('>'); :}
+					;
+
+typearglist			::= typeargument:type					{: RESULT = type; :}
+					|	typearglist:list COMMA typeargument:arg	{: RESULT = list.append(",").append(arg); :}
+					;
+
+typeargument		::=	type_id:type						{: RESULT = type; :}
+					|	wildcard:name						{: RESULT = name; :}
+					;
+
+wildcard			::=	QUESTION							{: RESULT = new StringBuilder("?"); :}
+					|	wildcard:w EXTENDS type_id:id		{: RESULT = w.append(" extends ").append(id); :}
+     				|	wildcard:w SUPER type_id:id			{: RESULT = w.append(" super ").append(id); :}
+					;
+
+symbol_id			::=	ID
+					|	OPTION
+					|	SUPER
+					|	EXTENDS
+					|	CODE
+					|	ACTION
+					|	PARSER
+					|	INIT
+					|	SCAN
+					|	WITH
+					|	LEFT
+					|	RIGHT
+					|	NONASSOC
+					|	AFTER
+					|	REDUCE
+					;
+
+robust_id			::=	ID
+					|	OPTION
+					|	CODE
+					|	ACTION
+					|	PARSER
+					|	TERMINAL
+					|	NONTERMINAL
+					|	INIT
+					|	SCAN
+					|	WITH
+					|	START
+					|	EXPECT
+					|	PRECEDENCE
+					|	LEFT
+					|	RIGHT
+					|	NONASSOC
+					|	AFTER
+					|	REDUCE
+					|	error:e
+							{:
+								ErrorManager.getManager().emit_error("Illegal use of reserved word", e$);
+								RESULT="ILLEGAL";
+							:}
+					;
