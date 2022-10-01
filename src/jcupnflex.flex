@@ -7,7 +7,7 @@ import fr.uha.hassenforder.jcupnflex.ErrorManager;
 %cupJHMH
 %{
 	// helpers to manage the whole code segment
-	private StringBuffer cs;
+	private StringBuilder cs;
     private int csline, cscolumn;
 
 	@SuppressWarnings("unused")
@@ -53,7 +53,7 @@ EndOfLineComment = "//" [^\r\n]* {Newline}
 CommentContent = ( [^*] | \*+[^*/] )*
 
 ident = ([:jletter:] | "_" ) ([:jletterdigit:] | [:jletter:] | "_" )*
-      | [:jletterdigit:]*  // Parse number as ident for options
+      | [:jletterdigit:]+  // Parse number as ident for options
 
 %state CODESEG
 
@@ -80,7 +80,7 @@ ident = ([:jletter:] | "_" ) ([:jletterdigit:] | [:jletter:] | "_" )*
   "<"           { return symbol(ETerminal.LT); }
   "::="         { return symbol(ETerminal.COLON_COLON_EQUALS); }
   "%prec"       { return symbol(ETerminal.PERCENT_PREC); }
-  "{:"          { cs = new StringBuffer(); csline=yyline+1; cscolumn=yycolumn+1; yybegin(CODESEG); }
+  "{:"          { cs = new StringBuilder(); csline=yyline; cscolumn=yycolumn; yybegin(CODESEG); }
   "package"     { return symbol(ETerminal.PACKAGE, yytext()); } 
   "import"      { return symbol(ETerminal.IMPORT, yytext()); }
   "option"      { return symbol(ETerminal.OPTION, yytext()); }
@@ -111,9 +111,9 @@ ident = ([:jletter:] | "_" ) ([:jletterdigit:] | [:jletter:] | "_" )*
 }
 
 <CODESEG> {
-  ":}"          { yybegin(YYINITIAL); return symbol(ETerminal.CODE_STRING,csline, cscolumn, yyline+1, yycolumn+yylength(), yytext()); }
-  .|\n          { cs.append(yytext()); }
+  ":}"          { yybegin(YYINITIAL); return symbol(ETerminal.CODE_STRING, csline+1, cscolumn+1, yyline+1, yycolumn+1, cs.toString()); }
+  [^]			{ cs.append(yytext()); }
 }
 
 // error fallback
-.|\n			{ emit_warning("Unrecognized character '"+yytext()+"' -- ignored"); }
+[^]				{ emit_warning("Unrecognized character '"+yytext()+"' -- ignored"); }

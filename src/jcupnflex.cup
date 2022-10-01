@@ -36,8 +36,6 @@ import fr.uha.hassenforder.jcupnflex.model.RegExp;
 import fr.uha.hassenforder.jcupnflex.model.SymbolKind;
 import fr.uha.hassenforder.jcupnflex.model.Terminal;
 
-//import fr.uha.hassenforder.jcupnflex.model.*;
-
 action code {:
 
 /** global variables to store the grammar the directivess and a factory to build various concepts */

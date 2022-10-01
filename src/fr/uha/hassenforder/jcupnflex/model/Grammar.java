@@ -13,10 +13,9 @@ import java.util.TreeMap;
  * A grammar is a collection of non-terminal and terminal symbols and
  * productions.
  * 
- * This class also contains the code to build the viable prefix recognizer,
- * which is the heart of the created parser.
- *
+ * @version last updated: 28/09/2022
  * @author hoenicke
+ * @author Michel Hassenforder
  *
  */
 public class Grammar {
@@ -31,6 +30,8 @@ public class Grammar {
 
 	public Grammar(IFactory factory) {
 		this.factory = factory;
+		Terminal error = new Terminal("error");
+		getTerminals().put(error.getName(), error);
 	}
 
 	public Map<String, Terminal> getTerminals() {

@@ -15,7 +15,7 @@ public class Main {
     	if (argv.length == 1) {
     		name = argv[0];
     	} else {
-    		name = "test.txt";
+    		name = "src/jcupnflex.cup";
     	}
     	AdvancedSymbolFactory csf = new AdvancedSymbolFactory();
     	Lexer l = new Lexer(new FileReader(name));
