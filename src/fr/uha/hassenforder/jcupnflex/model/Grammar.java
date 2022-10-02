@@ -32,6 +32,8 @@ public class Grammar {
 		this.factory = factory;
 		Terminal error = new Terminal("error");
 		getTerminals().put(error.getName(), error);
+		Terminal eof = new Terminal("EOF");
+		getTerminals().put(eof.getName(), eof);
 	}
 
 	public Map<String, Terminal> getTerminals() {

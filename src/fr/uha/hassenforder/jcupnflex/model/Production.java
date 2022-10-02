@@ -1,7 +1,5 @@
 package fr.uha.hassenforder.jcupnflex.model;
 
-import java.util.List;
-
 /**
  * Borrowed from JCup 
  * 
@@ -22,8 +20,8 @@ import java.util.List;
 
 public abstract class Production {
 
-	/** A collection of parts for the right hand side. */
-	private final List<ProductionPart> rhs;
+	/** A part for the right hand side. Mainly a ListPart but could be null for empty */
+	private final ProductionPart rhs;
 
 	/**
 	 * Full constructor.
@@ -32,22 +30,22 @@ public abstract class Production {
 	 * (including terminals, regexp, non terminals, operators, actions)
 	 * 
 	 */
-	protected Production(List<ProductionPart> rhs) {
+	protected Production(ProductionPart rhs) {
 		this.rhs = rhs;
 	}
 
 	public abstract SymbolKind getKind() ;
 
-	public List<ProductionPart> getRhs() {
+	public abstract GrammarSymbol getLhs();
+	
+	public ProductionPart getRhs() {
 		return rhs;
 	}
 
 	public String toString() {
 		StringBuilder result = new StringBuilder();
-		for (ProductionPart part : rhs) {
-			result.append(part.toString());
-			result.append(" ");
-		}
+		result.append(rhs.toString());
+		result.append(" ");
 		return result.toString();
 	}
 

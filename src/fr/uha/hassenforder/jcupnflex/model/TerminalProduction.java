@@ -1,7 +1,5 @@
 package fr.uha.hassenforder.jcupnflex.model;
 
-import java.util.List;
-
 /**
  * 
  * This class represents a production with a terminal as LHS.
@@ -23,7 +21,7 @@ public class TerminalProduction extends Production {
 	 * @param lhs the terminal as lhs 
 	 * @param rhs the List of ProductionParts terminal as rhs 
 	 */
-	public TerminalProduction(Terminal lhs, List<ProductionPart> rhs) {
+	public TerminalProduction(Terminal lhs, ProductionPart rhs) {
 		super(rhs);
 		this.lhs = lhs;
 	}
@@ -33,6 +31,7 @@ public class TerminalProduction extends Production {
 		return lhs.getKind();
 	}
 
+	@Override
 	public Terminal getLhs() {
 		return lhs;
 	}

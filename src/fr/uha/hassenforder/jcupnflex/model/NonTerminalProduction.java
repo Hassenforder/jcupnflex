@@ -1,7 +1,5 @@
 package fr.uha.hassenforder.jcupnflex.model;
 
-import java.util.List;
-
 /**
  * 
  * This class represents a production with a nonterminal as LHS.
@@ -29,7 +27,7 @@ public class NonTerminalProduction extends Production {
 	 * @param rhs the List of ProductionParts terminal as rhs 
 	 * @param precedence the precedence of the production 
 	 */
-	public NonTerminalProduction(NonTerminal lhs, List<ProductionPart> rhs, Terminal precedence) {
+	public NonTerminalProduction(NonTerminal lhs, ProductionPart rhs, Terminal precedence) {
 		super(rhs);
 		this.lhs = lhs;
 		this.precedence = precedence;
@@ -40,6 +38,7 @@ public class NonTerminalProduction extends Production {
 		return lhs.getKind();
 	}
 
+	@Override
 	public NonTerminal getLhs() {
 		return lhs;
 	}

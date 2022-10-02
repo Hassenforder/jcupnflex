@@ -33,9 +33,10 @@ public class Factory implements IFactory {
 
 	@Override
 	public Production createProduction(GrammarSymbol lhs, List<ProductionPart> rhs, GrammarSymbol precedence) {
+		ProductionPart list = createListPart(rhs);
 		switch (lhs.getKind()) {
-		case NONTERMINAL:	return new NonTerminalProduction((NonTerminal) lhs, rhs, (Terminal) precedence);
-		case TERMINAL:		return new TerminalProduction((Terminal) lhs, rhs);
+		case NONTERMINAL:	return new NonTerminalProduction((NonTerminal) lhs, list, (Terminal) precedence);
+		case TERMINAL:		return new TerminalProduction((Terminal) lhs, list);
 		case REGEXP:		return null;
 		default:			return null;
 		}

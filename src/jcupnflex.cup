@@ -36,6 +36,18 @@ import fr.uha.hassenforder.jcupnflex.model.RegExp;
 import fr.uha.hassenforder.jcupnflex.model.SymbolKind;
 import fr.uha.hassenforder.jcupnflex.model.Terminal;
 
+parser code {:
+
+    public Grammar getGrammar() {
+        return action_obj.grammar;
+    }
+    
+    public DirectiveSet getDirectiveSet() {
+        return action_obj.directives;
+    }
+    
+:}
+
 action code {:
 
 /** global variables to store the grammar the directivess and a factory to build various concepts */
@@ -132,20 +144,20 @@ nonterminal Terminal prod_precedence;
 
 start with grammar;
 
-grammar				::=	( spec SEMICOLON ) *				{: RESULT = grammar; :}
+grammar				::=	( spec ) *				{: RESULT = grammar; :}
 					;
 
-spec				::=	package_spec
-					|	import_spec
-				    |	option_spec
-			    	|	parser_spec
+spec				::=	package_spec SEMICOLON
+					|	import_spec SEMICOLON
+				    |	option_spec SEMICOLON
+			    	|	parser_spec SEMICOLON
 				    |	custom_code_spec
-					|	symbol_spec
-					|	precedence_spec
-					|	expect_spec
-					|	start_spec
-					|	production_spec
-					|	error
+					|	symbol_spec SEMICOLON
+					|	precedence_spec SEMICOLON
+					|	expect_spec SEMICOLON
+					|	start_spec SEMICOLON
+					|	production_spec SEMICOLON
+					|	error SEMICOLON
 					;
 
 package_spec		::=	PACKAGE	multipart_id:id
