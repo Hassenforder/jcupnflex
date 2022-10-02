@@ -34,32 +34,56 @@ public class Main {
 	    }
 	}
 
-	private File buildOutputFile (String destDir, String destfile) {
+	private File buildOutputFile (String destDir, String inputFile, String pattern) {
 		File targetDir = new File (destDir == null ? "." : destDir);
-		File outputFile = new File (targetDir, destfile);
+		String stripedName;
+		int dotPosition = inputFile.lastIndexOf(".");
+		int slashPosition = inputFile.lastIndexOf("/");
+		if (slashPosition != -1 && dotPosition != -1) {
+			stripedName = inputFile.substring(slashPosition+1, dotPosition);
+		} else if (slashPosition != -1 && dotPosition == -1) {
+			stripedName = inputFile.substring(slashPosition+1);
+		} else if (slashPosition == -1 && dotPosition != -1) {
+			stripedName = inputFile.substring(0, dotPosition);
+		} else {
+			stripedName = inputFile;
+		}
+		String destFile = String.format(pattern, stripedName);
+		File outputFile = new File (targetDir, destFile);
 		return outputFile;
 	}
 
-	private void generateJCup(String destDir, String jcupFileName) {
-		File outputFile = buildOutputFile(destDir, jcupFileName);
+	private void generateJCup(String destDir, String inputFileName) {
+		File outputFile = buildOutputFile(destDir, inputFileName, options.getJcupPattern());
 		CupWriter writer = new CupWriter (grammar, directives, outputFile);
 		writer.generate ();
 	}
 
-	private void generateFlex(String destDir, String flexFileName) {
-		File outputFile = buildOutputFile(destDir, flexFileName);
+	private void generateFlex(String destDir, String inputFileName) {
+		File outputFile = buildOutputFile(destDir, inputFileName, options.getFlexPattern());
 		FlexWriter writer = new FlexWriter (grammar, directives, outputFile);
 		writer.generate ();
 	}
 
-    private boolean process(String[] argv) {
-    	if (! options.parseArgs(argv)) return false;
-    	if (! readFile(options.getInputFile())) return false;
+	private boolean process (String inputFileName) {
+    	if (! readFile(inputFileName)) return false;
     	if (options.isJcupGeneration()) {
-    		generateJCup (options.getDestDir(), options.getJcupFileName());
+    		generateJCup (options.getDestDir(), inputFileName);
     	}
     	if (options.isFlexGeneration()) {
-    		generateFlex (options.getDestDir(), options.getFlexFileName());
+    		generateFlex (options.getDestDir(), inputFileName);
+    	}
+    	return true;
+	}
+
+	private boolean process(String[] argv) {
+    	if (! options.parseArgs(argv)) return false;
+    	for (String inputFileName : options.getInputFiles()) {
+    		process (inputFileName);
+    	}
+    	if (options.getInputFiles().isEmpty()) {
+    		process ("src/jcupnflex.cup");
+    		process ("calc.cnf");
     	}
     	return true;
 	}

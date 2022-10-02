@@ -10,11 +10,12 @@ import fr.uha.hassenforder.jcupnflex.ErrorManager;
 	private StringBuilder cs;
     private int csline, cscolumn;
 
+	// a simple function to remove the double quotes
 	@SuppressWarnings("unused")
 	private String regexpCleaner (char toEscape) {
 		StringBuilder tmp = new StringBuilder ();
-		int current = zzStartRead+1;
-		while (current < zzMarkedPos-1) {
+		int current = zzStartRead;
+		while (current < zzMarkedPos) {
 			tmp.append(zzBuffer[current]);
 			if (zzBuffer[current] == toEscape && zzBuffer[current+1] == toEscape) {
 				++current;

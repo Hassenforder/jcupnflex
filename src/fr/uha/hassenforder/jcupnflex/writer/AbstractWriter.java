@@ -15,7 +15,7 @@ import fr.uha.hassenforder.jcupnflex.model.GrammarSymbol;
 import fr.uha.hassenforder.jcupnflex.model.Production;
 import fr.uha.hassenforder.jcupnflex.model.Terminal;
 
-public class Abstractwriter {
+public class AbstractWriter {
 
 	protected Grammar grammar;
 	protected DirectiveSet directives;
@@ -23,7 +23,7 @@ public class Abstractwriter {
 	private BufferedWriter output;
 	private static final int TAB_SIZE = 4;
 
-	public Abstractwriter(Grammar grammar, DirectiveSet directives, File outputFile) {
+	public AbstractWriter(Grammar grammar, DirectiveSet directives, File outputFile) {
 		super();
 		this.grammar = grammar;
 		this.directives = directives;
@@ -63,6 +63,18 @@ public class Abstractwriter {
 		}
 	}
 
+	protected void appendLine(String content) {
+		if (output == null) return;
+		if (content == null) return;
+		if (content.isEmpty()) return;
+		try {
+			output.append(content);
+			output.newLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	protected void newLine() {
 		if (output == null) return;
 		try {
@@ -72,7 +84,7 @@ public class Abstractwriter {
 		}
 	}
 
-	protected StringBuilder writeProperty(String header, String value) {
+	protected StringBuilder writeProperty(String header, String value, String closer) {
 		if (output == null) return null;
 		if (value == null) return null;
 		if (header == null) return null;
@@ -80,21 +92,21 @@ public class Abstractwriter {
 		tmp.append(header);
 		tmp.append(" ");
 		tmp.append(value);
-		tmp.append(";");
+		tmp.append(closer);
 		return tmp;
 	}
 
-	protected StringBuilder writeCode(String header, String content) {
+	protected StringBuilder writeCode(String header, String opener, String content, String closer) {
 		if (output == null) return null;
 		if (header == null) return null;
 		if (content == null) return null;
 		StringBuilder tmp = new StringBuilder();
 		tmp.append(header);
-		tmp.append(" {:");
+		tmp.append(opener);
 		tmp.append("\n");
 		tmp.append(content);
 		tmp.append("\n");
-		tmp.append(":}");
+		tmp.append(closer);
 		return tmp;
 	}
 

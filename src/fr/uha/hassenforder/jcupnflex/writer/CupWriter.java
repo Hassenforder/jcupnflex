@@ -23,10 +23,18 @@ import fr.uha.hassenforder.jcupnflex.model.SimplePart;
 import fr.uha.hassenforder.jcupnflex.model.SymbolPart;
 import fr.uha.hassenforder.jcupnflex.model.Terminal;
 
-public class CupWriter extends Abstractwriter {
+public class CupWriter extends AbstractWriter {
 
 	public CupWriter(Grammar grammar, DirectiveSet directives, File outputFile) {
 		super(grammar, directives, outputFile);
+	}
+
+	private StringBuilder writeProperty(String header, String value) {
+		return writeProperty (header, value, ";");
+	}
+
+	private StringBuilder writeCode(String header, String content) {
+		return writeCode (header, " {:", content, ":}");
 	}
 
 	protected StringBuilder writeListSymbols(String header, String property, Collection<? extends GrammarSymbol> symbols) {
@@ -40,6 +48,7 @@ public class CupWriter extends Abstractwriter {
 		boolean first = true;
 		for (GrammarSymbol symbol : symbols) {
 			if ("error".equals(symbol.getName())) continue;
+			if ("EOF".equals(symbol.getName())) continue;
 			if (! first) tmp.append(", ");
 			else first = false;
 			tmp.append(symbol.getName());

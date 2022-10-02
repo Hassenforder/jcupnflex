@@ -1,0 +1,83 @@
+package fr.uha.hassenforder.javacup.sample.calculator;
+
+import java.util.TreeMap;
+import java.util.Map;
+
+parser code {:
+    
+    public void report_error(String message, Object info) {
+        StringBuffer m = new StringBuffer("Error");
+		m.append (info.toString());
+        m.append(" : "+message);
+        System.err.println(m.toString());
+    }
+   
+    public void report_fatal_error(String message, Object info) {
+        report_error(message, info);
+        System.exit(1);
+    }
+
+	private Map<String, Integer> values = new TreeMap<String, Integer> ();
+
+	public void setValue (String name, int value) {
+		values.put(name, Integer.valueOf (value));
+	}
+	
+	public int getValue (String name) {
+		int value = 0;
+		if (values.containsKey(name))
+			value = values.get(name).intValue();
+		return value;
+	}
+
+:}
+
+terminal			SUPPRESS;
+terminal			EOLN;
+terminal Integer	NUMBER;
+terminal String		ID;
+terminal			UNARIES;
+   
+nonterminal 		command, list, instr;
+nonterminal Integer expr;
+nonterminal			eolnOpt;
+
+precedence left		'+', '-';
+precedence left		'*', '/';
+precedence right	UNARIES;
+
+command	::=	list
+		;
+
+list	::=	( instr EOLN ) *
+		;
+
+instr	::=	ID:n '=' expr:e		{: parser.setValue (n, e); :}
+		|	expr:e				{: System.out.println (e); :}
+		;
+
+expr	::=	expr:e1	'+'	expr:e2		{: RESULT = e1 + e2; :}
+		|	expr:e1	'-'	expr:e2		{: RESULT = e1 - e2; :}
+		|	expr:e1	'*'	expr:e2		{: RESULT = e1 * e2; :}
+		|	expr:e1	'/'	expr:e2		{: RESULT = e1 / e2; :}
+		|	'-'	expr:e				{: RESULT = - e; :} %prec UNARIES
+		|	'+'	expr:e				{: RESULT = + e; :} %prec UNARIES
+		|	'('	expr:e ')'			{: RESULT = e; :}
+		|	NUMBER:n				{: RESULT = n; :}
+		|	ID:n					{: RESULT = parser.getValue(n); :}
+		;
+
+SUPPRESS::=	`[ \t\f]`				{: :}
+		;
+
+NUMBER	::=	`[0-9]+`
+		;
+		
+ID		::=	`[A-Za-z_][A-Za-z_0-9]*`
+		;
+
+EOLN	::=	`\r\n|\r|\n`
+		;
+
+
+		

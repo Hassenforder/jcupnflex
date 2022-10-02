@@ -1,18 +1,21 @@
 package fr.uha.hassenforder.jcupnflex;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Options {
 
 	/** Directory were the resulting code goes into (null is used for local). */
 	private String destDir = null;
 
 	/** Inputfile to process. */
-	private String inputFile = "src/jcupnflex.cup";
+	private List<String> inputFiles = new ArrayList<>();
 
-	/** Name of the generated jcup file. */
-	private String jcupFileName = "Parser.cup!";
+	/** Pattern of the name of the generated jcup file. */
+	private String jcupPattern = "Parser-%s.cup!";
 
-	/** Name of the generated jflex file. */
-	private String flexFileName = "Lexic.flex!";
+	/** Pattern of the name of the generated jflex file. */
+	private String flexPattern = "Scanner-%s.flex!";
 
 	/** Generate a jcup file. */
 	private boolean jcupGeneration = true;
@@ -24,16 +27,16 @@ public class Options {
 		return destDir;
 	}
 
-	public String getInputFile() {
-		return inputFile;
+	public List<String> getInputFiles() {
+		return inputFiles;
 	}
 
-	public String getJcupFileName() {
-		return jcupFileName;
+	public String getJcupPattern() {
+		return jcupPattern;
 	}
 
-	public String getFlexFileName() {
-		return flexFileName;
+	public String getFlexPattern() {
+		return flexPattern;
 	}
 
 	public boolean isJcupGeneration() {
@@ -63,7 +66,7 @@ public class Options {
 		}
 		if (option.equals("-cup")) {
 			if (arg1 != null) {
-				jcupFileName = arg1;
+				jcupPattern = arg1;
 				return 2;
 			} else {
 				ErrorManager.getManager().emit_fatal("cup must have a name argument");
@@ -72,7 +75,7 @@ public class Options {
 		}
 		if (option.equals("-flex")) {
 			if (arg1 != null) {
-				flexFileName = arg1;
+				flexPattern = arg1;
 				return 2;
 			} else {
 				ErrorManager.getManager().emit_fatal("flex must have a name argument");
@@ -88,7 +91,7 @@ public class Options {
 			return 1;
 		}
 		if (option.endsWith(".cup")) {
-			inputFile = option;
+			inputFiles.add(option);
 			return 1;
 		}
 		ErrorManager.getManager().emit_fatal("Unrecognized option \"" + option + "\"");

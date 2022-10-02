@@ -68,8 +68,10 @@ action code {:
 	/** update the precedences we are declaring */
 	private void updatePrecedence(Associativity associativity) {
 		this.currentAssociativity = associativity;
-		++this.currentPriority;
-    }
+		if (associativity != Associativity.NO) {
+			++this.currentPriority;
+	    }
+	}
   
 	private GrammarSymbol lhs = null;
 
@@ -251,7 +253,7 @@ new_symbol_id		::=	symbol_id:sym_id
 							:}
 					;
 
-precedence_spec		::= PRECEDENCE associativity_decl precedence_list
+precedence_spec		::= PRECEDENCE associativity_decl precedence_list	{: updatePrecedence(Associativity.NO); :}
 					;
 
 associativity_decl	::= LEFT								{: updatePrecedence(Associativity.LEFT); :}
@@ -301,7 +303,7 @@ start_spec			::=	START WITH symbol_id:name
 							:}
 					;
 
-production_spec		::=	lhs COLON_COLON_EQUALS rhs_list
+production_spec		::=	lhs COLON_COLON_EQUALS rhs_list		{: updateLhs(null); :}
 					;
 
 lhs					::=	symbol_id:lhs_id					{: updateLhs(getKnownSymbol(lhs_id$, lhs_id)); :}
@@ -337,8 +339,6 @@ wild_symbol_id		::=	wild_symbol_id:child STAR			{: RESULT = factory.createMany0P
 								RegExp symbol = grammar.getOrAddRegexp(content);
 								if (symbol == null) {
 									ErrorManager.getManager().emit_error("Regexp \"" + content + "\" cannot be used ", content$);
-								} else {
-									symbol.setPrecedence(currentPriority, currentAssociativity);
 								}
 								RESULT = factory.createSymbolPart(symbol);
 							:}
