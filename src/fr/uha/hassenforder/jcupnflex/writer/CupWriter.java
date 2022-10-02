@@ -1,10 +1,6 @@
 package fr.uha.hassenforder.jcupnflex.writer;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -27,88 +23,13 @@ import fr.uha.hassenforder.jcupnflex.model.SimplePart;
 import fr.uha.hassenforder.jcupnflex.model.SymbolPart;
 import fr.uha.hassenforder.jcupnflex.model.Terminal;
 
-public class CupWriter {
+public class CupWriter extends Abstractwriter {
 
-	private Grammar grammar;
-	private DirectiveSet directives;
-	private File outputFile;
-	private BufferedWriter output;
-	
 	public CupWriter(Grammar grammar, DirectiveSet directives, File outputFile) {
-		this.grammar = grammar;
-		this.directives = directives;
-		this.outputFile = outputFile;
+		super(grammar, directives, outputFile);
 	}
 
-	private boolean open () {
-		try {
-			output = new BufferedWriter(new FileWriter(outputFile));
-			return true;
-		} catch (IOException e) {
-			e.printStackTrace();
-			output = null;
-			return false;
-		}
-	}
-
-	private boolean close () {
-		try {
-			if (output != null) output.close();
-			return true;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
-
-	private void appendLine (StringBuilder content) {
-		if (output == null) return;
-		if (content == null) return;
-		if (content.isEmpty()) return;
-		try {
-			output.append(content);
-			output.newLine();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void newLine () {
-		if (output == null) return;
-		try {
-			output.newLine();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private StringBuilder writeProperty (String header, String value) {
-		if (output == null) return null;
-		if (value == null) return null;
-		if (header == null) return null;
-		StringBuilder tmp = new StringBuilder();
-		tmp.append(header);
-		tmp.append(" ");
-		tmp.append(value);
-		tmp.append(";");
-		return tmp;
-	}
-
-	private StringBuilder writeCode (String header, String content) {
-		if (output == null) return null;
-		if (header == null) return null;
-		if (content == null) return null;
-		StringBuilder tmp = new StringBuilder();
-		tmp.append(header);
-		tmp.append(" {:");
-		tmp.append("\n");
-		tmp.append(content);
-		tmp.append("\n");
-		tmp.append(":}");
-		return tmp;
-	}
-
-	private StringBuilder writeListSymbols (String header, String property, Collection<? extends GrammarSymbol> symbols) {
+	protected StringBuilder writeListSymbols(String header, String property, Collection<? extends GrammarSymbol> symbols) {
 		StringBuilder tmp = new StringBuilder();
 		tmp.append(header);
 		tmp.append(" ");
@@ -127,7 +48,7 @@ public class CupWriter {
 		return tmp;
 	}
 
-	private StringBuilder writePart (ProductionPart part) {
+	private StringBuilder writePart(ProductionPart part) {
 		StringBuilder tmp = new StringBuilder();
 		switch (part.getKind()) {
 		case ACTION:
@@ -190,17 +111,7 @@ public class CupWriter {
 		return tmp;
 	}
 
-	static final int TAB_SIZE = 4;
-	
-	private StringBuilder writeTabulation (int longuestLhs, int length) {
-		StringBuilder tmp = new StringBuilder();
-		for (int i = length; i < longuestLhs; i += TAB_SIZE) {
-			tmp.append("\t");
-		}
-		return tmp;
-	}
-
-	private StringBuilder writeListProductions (int longuestLhs, String lhs, Collection<? extends Production> productions) {
+	protected StringBuilder writeListProductions(int longuestLhs, String lhs, Collection<? extends Production> productions) {
 		StringBuilder tmp = new StringBuilder();
 		tmp.append(lhs);
 		tmp.append(writeTabulation(longuestLhs, lhs.length()));
@@ -225,20 +136,6 @@ public class CupWriter {
 		return tmp;
 	}
 
-	private TreeMap<String, List<Production>> orderSymbolsByName (Collection<? extends Production> original) {
-		TreeMap<String, List<Production>> ordered = new TreeMap<>();
-		for (Production production : original) {
-			String name = production.getLhs ().getName();
-			List<Production> list = ordered.get(name);
-			if (list == null) {
-				list = new ArrayList<>();
-				ordered.put (name, list);
-			}
-			list.add(production);
-		}
-		return ordered;
-	}
-
 	private void emitNonTerminalProductions() {
 		TreeMap<String, List<Production>> ordered = orderSymbolsByName (grammar.getProductions());
 		int longuestLhs = 0;
@@ -247,7 +144,7 @@ public class CupWriter {
 			int length = entry.getKey().length();
 			if (longuestLhs < length) longuestLhs = length;
 		}
-		longuestLhs = ((longuestLhs / TAB_SIZE) + 1) * TAB_SIZE;
+		longuestLhs = normalizeLength(longuestLhs);
 		for (Map.Entry<String, List<Production>> entry : ordered.entrySet()) {
 			if (grammar.getNonTerminal(entry.getKey()) == null) continue;
 			appendLine(writeListProductions (longuestLhs, entry.getKey(), entry.getValue()));
@@ -265,37 +162,7 @@ public class CupWriter {
 		appendLine(writeProperty ("expect", expect));
 	}
 
-	private TreeMap<String, List<GrammarSymbol>> orderSymbolsByType (Collection<? extends GrammarSymbol> original) {
-		TreeMap<String, List<GrammarSymbol>> ordered = new TreeMap<>();
-		for (GrammarSymbol symbol : original) {
-			String type = symbol.getType();
-			if (type == null) type = "";
-			List<GrammarSymbol> list = ordered.get(type);
-			if (list == null) {
-				list = new ArrayList<>();
-				ordered.put (type, list);
-			}
-			list.add(symbol);
-		}
-		return ordered;
-	}
-
-	private TreeMap<Integer, List<Terminal>> orderTerminalsByPriority (Collection<Terminal> original) {
-		TreeMap<Integer, List<Terminal>> ordered = new TreeMap<>();
-		for (Terminal terminal : original) {
-			int priority = terminal.getPriority();
-			if (priority == -1) continue;
-			List<Terminal> list = ordered.get(priority);
-			if (list == null) {
-				list = new ArrayList<>();
-				ordered.put (priority, list);
-			}
-			list.add(terminal);
-		}
-		return ordered;
-	}
-
-	private Associativity getAssociativy (List<Terminal> terminals) {
+	private Associativity getAssociativity (List<Terminal> terminals) {
 		Associativity found = null;
 		for (Terminal terminal : terminals) {
 			if (found == null) found = terminal.getAssociativity();
@@ -309,7 +176,7 @@ public class CupWriter {
 	private void emitPrecedences() {
 		TreeMap<Integer, List<Terminal>> ordered = orderTerminalsByPriority (grammar.getTerminals().values());
 		for (Map.Entry<Integer, List<Terminal>> entry : ordered.entrySet()) {
-			Associativity associativity = getAssociativy(entry.getValue());
+			Associativity associativity = getAssociativity(entry.getValue());
 			String property = null;
 			switch (associativity) {
 			case LEFT: property = "left"; break;
