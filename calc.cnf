@@ -1,4 +1,4 @@
-package fr.uha.hassenforder.javacup.sample.calculator;
+package calculator;
 
 import java.util.TreeMap;
 import java.util.Map;
@@ -32,7 +32,7 @@ parser code {:
 
 :}
 
-terminal			SUPPRESS;
+terminal void		SUPPRESS;
 terminal			EOLN;
 terminal Integer	NUMBER;
 terminal String		ID;

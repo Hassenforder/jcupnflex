@@ -20,7 +20,7 @@ public class Factory implements IFactory {
 
 	static private String buildRegExpName () {
 		StringBuilder tmp = new StringBuilder ();
-		tmp.append("__REGEXP_");
+		tmp.append("__REGEXP$");
 		tmp.append(++instance);
 		tmp.append("__");
 		return tmp.toString();
@@ -32,14 +32,19 @@ public class Factory implements IFactory {
 	}
 
 	@Override
-	public Production createProduction(GrammarSymbol lhs, List<ProductionPart> rhs, GrammarSymbol precedence) {
+	public Production createNonTerminalProduction(GrammarSymbol lhs, List<ProductionPart> rhs, GrammarSymbol precedence) {
 		ProductionPart list = createListPart(rhs);
-		switch (lhs.getKind()) {
-		case NONTERMINAL:	return new NonTerminalProduction((NonTerminal) lhs, list, (Terminal) precedence);
-		case TERMINAL:		return new TerminalProduction((Terminal) lhs, list);
-		case REGEXP:		return null;
-		default:			return null;
-		}
+		return new NonTerminalProduction((NonTerminal) lhs, list, (Terminal) precedence);
+	}
+
+	@Override
+	public Production createTerminalProduction(GrammarSymbol lhs, String regexp, String code) {
+		return new TerminalProduction((Terminal) lhs, regexp, code);
+	}
+
+	@Override
+	public Production createTerminalProduction(GrammarSymbol lhs, String from, String to, String code) {
+		return new TerminalProduction((Terminal) lhs, from, to, code);
 	}
 
 	@Override

@@ -20,33 +20,11 @@ package fr.uha.hassenforder.jcupnflex.model;
 
 public abstract class Production {
 
-	/** A part for the right hand side. Mainly a ListPart but could be null for empty */
-	private final ProductionPart rhs;
-
-	/**
-	 * Full constructor.
-	 * 
-	 * This constructor accepts an array of ProductionParts
-	 * (including terminals, regexp, non terminals, operators, actions)
-	 * 
-	 */
-	protected Production(ProductionPart rhs) {
-		this.rhs = rhs;
+	protected Production() {
 	}
 
-	public abstract SymbolKind getKind() ;
+	public abstract ProductionKind getKind() ;
 
 	public abstract GrammarSymbol getLhs();
 	
-	public ProductionPart getRhs() {
-		return rhs;
-	}
-
-	public String toString() {
-		StringBuilder result = new StringBuilder();
-		result.append(rhs.toString());
-		result.append(" ");
-		return result.toString();
-	}
-
 }

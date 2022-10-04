@@ -17,6 +17,9 @@ public class NonTerminalProduction extends Production {
 	/** The left hand side non-terminal. */
 	private final NonTerminal lhs;
 
+	/** A part for the right hand side. Mainly a ListPart but could be null for empty */
+	private final ProductionPart rhs;
+
 	/** The precedence of the rule */
 	private Terminal precedence;
 
@@ -28,19 +31,24 @@ public class NonTerminalProduction extends Production {
 	 * @param precedence the precedence of the production 
 	 */
 	public NonTerminalProduction(NonTerminal lhs, ProductionPart rhs, Terminal precedence) {
-		super(rhs);
+		super();
 		this.lhs = lhs;
+		this.rhs = rhs;
 		this.precedence = precedence;
 	}
 
 	@Override
-	public SymbolKind getKind() {
-		return lhs.getKind();
+	public ProductionKind getKind() {
+		return ProductionKind.NONTERMINAL;
 	}
 
 	@Override
 	public NonTerminal getLhs() {
 		return lhs;
+	}
+
+	public ProductionPart getRhs() {
+		return rhs;
 	}
 
 	public Terminal getPrecedence() {

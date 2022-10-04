@@ -141,6 +141,7 @@ public class AbstractWriter {
 		for (GrammarSymbol symbol : original) {
 			String type = symbol.getType();
 			if (type == null) type = "";
+			if (type.equals("void")) continue;
 			List<GrammarSymbol> list = ordered.get(type);
 			if (list == null) {
 				list = new ArrayList<>();

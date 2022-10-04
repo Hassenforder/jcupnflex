@@ -18,6 +18,7 @@ import fr.uha.hassenforder.jcupnflex.model.NonTerminal;
 import fr.uha.hassenforder.jcupnflex.model.NonTerminalProduction;
 import fr.uha.hassenforder.jcupnflex.model.OperatorPart;
 import fr.uha.hassenforder.jcupnflex.model.Production;
+import fr.uha.hassenforder.jcupnflex.model.ProductionKind;
 import fr.uha.hassenforder.jcupnflex.model.ProductionPart;
 import fr.uha.hassenforder.jcupnflex.model.SimplePart;
 import fr.uha.hassenforder.jcupnflex.model.SymbolPart;
@@ -127,12 +128,14 @@ public class CupWriter extends AbstractWriter {
 		tmp.append("::=\t");
 		boolean first = true;
 		for (Production production : productions) {
+			if (production.getKind() != ProductionKind.NONTERMINAL) continue;
+			NonTerminalProduction nonterminal = (NonTerminalProduction) production;
 			if (! first) {
 				tmp.append(writeTabulation(longuestLhs, 0));
 				tmp.append("|\t");
 			} else first = false;
-			tmp.append(writePart (production.getRhs()));
-			Terminal precedence = ((NonTerminalProduction) production).getPrecedence();
+			tmp.append(writePart (nonterminal.getRhs()));
+			Terminal precedence = nonterminal.getPrecedence();
 			if (precedence != null) {
 				tmp.append(" %prec ");
 				tmp.append(precedence.getName());

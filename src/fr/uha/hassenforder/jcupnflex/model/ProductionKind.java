@@ -1,7 +1,7 @@
 package fr.uha.hassenforder.jcupnflex.model;
 
 /**
- * This class represents the kind of a ProductionPart
+ * This class represents the kind of a Production or a ProductionPart
  * It helps to determine what part without try/catch and so on
  * 
  * LIST		: a list of parts
@@ -15,6 +15,13 @@ package fr.uha.hassenforder.jcupnflex.model;
  */
 
 public enum ProductionKind {
+// Production
+	NONTERMINAL,
+	TERMINAL_SIMPLE,
+	TERMINAL_REGION,
+	TERMINAL_FALLBACK,
+
+// ProductionPart
 	LIST,
 	SIMPLE,
 	SYMBOL,

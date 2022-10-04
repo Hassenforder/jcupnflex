@@ -6,6 +6,7 @@ import java.io.FileReader;
 import com.github.jhoenicke.javacup.runtime.AdvancedSymbolFactory;
 
 import fr.uha.hassenforder.jcupnflex.model.DirectiveSet;
+import fr.uha.hassenforder.jcupnflex.model.Factory;
 import fr.uha.hassenforder.jcupnflex.model.Grammar;
 import fr.uha.hassenforder.jcupnflex.reader.Lexer;
 import fr.uha.hassenforder.jcupnflex.reader.Parser;
@@ -15,18 +16,24 @@ import fr.uha.hassenforder.jcupnflex.writer.FlexWriter;
 public class Main {
 
 	private Options options = new Options();
+	private Factory factory;
 	private Grammar grammar;
 	private DirectiveSet directives;
 	
 	private boolean readFile(String inputFile) {
 		try {
+	    	factory = new Factory();
+	    	grammar = new Grammar(factory);
+	    	directives = new DirectiveSet();
 	    	AdvancedSymbolFactory csf = new AdvancedSymbolFactory();
 	    	Lexer l = new Lexer(new FileReader(inputFile));
+	    	l.setGrammar(grammar);
 	    	l.setAdvancedSymbolFactory(csf);
 	    	Parser p = new Parser(l, csf);
+	    	p.setFactory(factory);
+	    	p.setGrammar(grammar);
+	    	p.setDirectiveSet(directives);
 	    	p.parse();
-	    	grammar = p.getGrammar();
-	    	directives = p.getDirectiveSet();
 	    	return true;
 	    } catch (Exception e) {
 	    	e.printStackTrace();
@@ -82,8 +89,8 @@ public class Main {
     		process (inputFileName);
     	}
     	if (options.getInputFiles().isEmpty()) {
-    		process ("src/jcupnflex.cup");
-    		process ("calc.cnf");
+    		process ("jcupnflex.cnf");
+//    		process ("calc.cnf");
     	}
     	return true;
 	}

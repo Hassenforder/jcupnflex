@@ -1,4 +1,5 @@
 import fr.uha.hassenforder.jcupnflex.ErrorManager;
+import fr.uha.hassenforder.jcupnflex.model.Grammar;
 %%
 
 %package fr.uha.hassenforder.jcupnflex.reader
@@ -6,6 +7,12 @@ import fr.uha.hassenforder.jcupnflex.ErrorManager;
 %public
 %cupJHMH
 %{
+	private Grammar grammar;
+	
+	public void setGrammar (Grammar grammar) {
+	   this.grammar = grammar;
+	}
+	
 	// helpers to manage the whole code segment
 	private StringBuilder cs;
     private int csline, cscolumn;
@@ -42,6 +49,12 @@ import fr.uha.hassenforder.jcupnflex.ErrorManager;
 		ErrorManager.getManager().emit_error("Scanner at " + (yyline+1) + "(" + (yycolumn+1) +  "): " + message);
     }
     
+    private ETerminal getToken (String name) {
+		if (grammar.getTerminal(name) != null) return ETerminal.SYMBOL_TERMINAL;
+		if (grammar.getNonTerminal(name) != null) return ETerminal.SYMBOL_NONTERMINAL;
+		return ETerminal.ID;
+	}
+
 %}
 
 Newline = \r | \n | \r\n
@@ -64,6 +77,7 @@ ident = ([:jletter:] | "_" ) ([:jletterdigit:] | [:jletter:] | "_" )*
 
   {Whitespace}  { }
   {Comment}     { }
+  "~"           { return symbol(ETerminal.TILDA); }
   "?"           { return symbol(ETerminal.QUESTION); }
   ";"           { return symbol(ETerminal.SEMICOLON); }
   ","           { return symbol(ETerminal.COMMA); }
@@ -103,7 +117,7 @@ ident = ([:jletter:] | "_" ) ([:jletterdigit:] | [:jletter:] | "_" )*
   "super"       { return symbol(ETerminal.SUPER, yytext()); }
   "after"       { return symbol(ETerminal.AFTER, yytext()); }
   "reduce"      { return symbol(ETerminal.REDUCE, yytext()); }
-  {ident}       { return symbol(ETerminal.ID, yytext()); }
+  {ident}       { return symbol(getToken(yytext()), yytext()); }
   
   `([^`]|``)*`	{ return symbol(ETerminal.REGEXP, regexpCleaner('`')); }
   '([^']|'')*'	{ return symbol(ETerminal.REGEXP, regexpCleaner('\'')); }

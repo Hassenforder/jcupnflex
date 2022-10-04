@@ -9,7 +9,9 @@ public interface IFactory {
 	GrammarSymbol createRegexp(String content);
 	
 	// all kind of Productions
-	Production createProduction (GrammarSymbol lhs, List<ProductionPart> rhs, GrammarSymbol precedence);
+	public Production createNonTerminalProduction(GrammarSymbol lhs, List<ProductionPart> rhs, GrammarSymbol precedence);
+	public Production createTerminalProduction(GrammarSymbol lhs, String regexp, String code);
+	public Production createTerminalProduction(GrammarSymbol lhs, String from, String to, String code);
 
 	// all kind of Parts
 	ProductionPart createSimplePart (ProductionPart child, String label);
