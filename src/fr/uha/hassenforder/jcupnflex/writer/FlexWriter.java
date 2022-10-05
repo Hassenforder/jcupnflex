@@ -31,9 +31,9 @@ public class FlexWriter extends AbstractWriter {
 		return writeCode ("", "%{", content, "%}");
 	}
 
-	private void emitFreeCode() {
-		// TODO Auto-generated method stub
-		
+	private void emitImportCode() {
+		String code = directives.getSingleValue(Directive.SCANNER_IMPORT_CODE);
+		appendLine(code);
 	}
 
 	private void emitHeader() {
@@ -53,7 +53,7 @@ public class FlexWriter extends AbstractWriter {
      * where $ represents the region name
 	 */
 	private void emitFlexCodes() {
-		String code = directives.getSingleValue(Directive.SCAN_CODE);
+		String code = directives.getSingleValue(Directive.SCANNER_CODE);
 		appendLine(writeCode (code));
 		if (ordered.containsKey(ProductionKind.TERMINAL_REGION)) {
 			for (List<TerminalProduction> terminals : ordered.get(ProductionKind.TERMINAL_REGION).values()) {
@@ -368,7 +368,7 @@ public class FlexWriter extends AbstractWriter {
 	public void generate() {
 		if (! open()) return;
 		ordered = sortAndOrderProductionByComplexity (grammar.getProductions());
-		emitFreeCode ();
+		emitImportCode ();
 		newLine();
 		appendLine("%%");
 		newLine ();

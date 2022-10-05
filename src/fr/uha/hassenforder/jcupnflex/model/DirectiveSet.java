@@ -19,17 +19,18 @@ public class DirectiveSet {
 	
 	private DirectiveKind map (Directive directive) {
 		switch (directive) {
-		case ACTION_CODE:		return DirectiveKind.SINGLE;
-		case AFTER_REDUCE_CODE:	return DirectiveKind.SINGLE;
-		case EXPECT:			return DirectiveKind.SINGLE;
-		case IMPORT:			return DirectiveKind.MULTIPLE;
-		case INIT_WITH_CODE:	return DirectiveKind.SINGLE;
-		case OPTION:			return DirectiveKind.KEYED;
-		case PACKAGE_NAME:		return DirectiveKind.SINGLE;
-		case PARSER_CODE:		return DirectiveKind.SINGLE;
-		case PARSER_NAME:		return DirectiveKind.SINGLE;
-		case SCAN_WITH_CODE:	return DirectiveKind.SINGLE;
-		default:				return DirectiveKind.SINGLE;
+		case PACKAGE_NAME:				return DirectiveKind.SINGLE;
+		case PARSER_NAME:				return DirectiveKind.SINGLE;
+		case OPTION:					return DirectiveKind.KEYED;
+		case EXPECT:					return DirectiveKind.SINGLE;
+		case PARSER_IMPORT_CODE:		return DirectiveKind.SINGLE;
+		case PARSER_ACTION_CODE:		return DirectiveKind.SINGLE;
+		case PARSER_AFTER_REDUCE_CODE:	return DirectiveKind.SINGLE;
+		case PARSER_INIT_CODE:			return DirectiveKind.SINGLE;
+		case PARSER_CODE:				return DirectiveKind.SINGLE;
+		case SCANNER_CODE:				return DirectiveKind.SINGLE;
+		case SCANNER_IMPORT_CODE:		return DirectiveKind.SINGLE;
+		default:						return DirectiveKind.SINGLE;
 		}
 	}
 

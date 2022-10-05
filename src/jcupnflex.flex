@@ -105,7 +105,7 @@ ident = ([:jletter:] | "_" ) ([:jletterdigit:] | [:jletter:] | "_" )*
   "terminal"    { return symbol(ETerminal.TERMINAL, yytext()); }
   "nonterminal" { return symbol(ETerminal.NONTERMINAL, yytext()); }
   "init"        { return symbol(ETerminal.INIT, yytext()); }
-  "scan"        { return symbol(ETerminal.SCAN, yytext()); }
+  "scanner"     { return symbol(ETerminal.SCANNER, yytext()); }
   "with"        { return symbol(ETerminal.WITH, yytext()); }
   "start"       { return symbol(ETerminal.START, yytext()); }
   "expect"      { return symbol(ETerminal.EXPECT, yytext()); }

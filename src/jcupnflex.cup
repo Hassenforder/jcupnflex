@@ -132,7 +132,7 @@ terminal				STAR, PLUS, QUESTION, EQUALS, LPARENT, RPARENT;
 terminal				TILDA;
 
 terminal String			PACKAGE, IMPORT, CODE, ACTION, PARSER, TERMINAL, NONTERMINAL, INIT, 
-						SCAN, WITH, START, PRECEDENCE, LEFT, RIGHT, NONASSOC, SUPER, EXTENDS, 
+						SCANNER, WITH, START, PRECEDENCE, LEFT, RIGHT, NONASSOC, SUPER, EXTENDS, 
 						AFTER, REDUCE, OPTION, EXPECT;
 
 terminal String			ID, CODE_STRING;
@@ -174,7 +174,6 @@ grammar				::=	( spec ) *
 					;
 
 spec				::=	package_spec SEMICOLON
-					|	import_spec SEMICOLON
 				    |	option_spec SEMICOLON
 			    	|	parser_spec SEMICOLON
 				    |	custom_code_spec
@@ -190,14 +189,6 @@ package_spec		::=	PACKAGE	multipart_id:id
 							{:
 								if ( ! getDirectives().setDirective(Directive.PACKAGE_NAME, id.toString())) {
 									ErrorManager.getManager().emit_warning("Redundant package name (skipping)");
-								}
-							:}
-					;
-
-import_spec			::=	IMPORT import_id:id
-							{:
-								if ( ! getDirectives().addDirective(Directive.IMPORT, id.toString())) {
-									ErrorManager.getManager().emit_warning("Redundant import (skipping)");
 								}
 							:}
 					;
@@ -238,12 +229,13 @@ custom_code_spec	::=	key_code:key CODE_STRING:code
 							:}
 					;
 
-key_code			::=	ACTION CODE							{: RESULT = Directive.ACTION_CODE; :}
+key_code			::=	PARSER ACTION CODE					{: RESULT = Directive.PARSER_ACTION_CODE; :}
+					|	PARSER IMPORT CODE					{: RESULT = Directive.PARSER_IMPORT_CODE; :}
 					|	PARSER CODE							{: RESULT = Directive.PARSER_CODE; :}
-					|	INIT WITH							{: RESULT = Directive.INIT_WITH_CODE; :}
-					|	SCAN WITH							{: RESULT = Directive.SCAN_WITH_CODE; :}
-					|	SCAN CODE							{: RESULT = Directive.SCAN_CODE; :}
-					|	AFTER REDUCE						{: RESULT = Directive.AFTER_REDUCE_CODE; :}
+					|	PARSER INIT WITH					{: RESULT = Directive.PARSER_INIT_CODE; :}
+					|	PARSER AFTER REDUCE					{: RESULT = Directive.PARSER_AFTER_REDUCE_CODE; :}
+					|	SCANNER IMPORT CODE					{: RESULT = Directive.SCANNER_IMPORT_CODE; :}
+					|	SCANNER CODE						{: RESULT = Directive.SCANNER_CODE; :}
 					;
 					
 symbol_spec			::= symbol_decl symbol_list				{: currentType = null; :}
@@ -424,7 +416,7 @@ symbol_id			::=	ID
 					|	ACTION
 					|	PARSER
 					|	INIT
-					|	SCAN
+					|	SCANNER
 					|	WITH
 					|	LEFT
 					|	RIGHT
@@ -443,7 +435,7 @@ robust_id			::=	ID
 					|	TERMINAL
 					|	NONTERMINAL
 					|	INIT
-					|	SCAN
+					|	SCANNER
 					|	WITH
 					|	START
 					|	EXPECT

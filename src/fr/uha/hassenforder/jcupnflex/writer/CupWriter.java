@@ -221,24 +221,20 @@ public class CupWriter extends AbstractWriter {
 
 	private void emitCupCodes() {
 		String code;
-		code = directives.getSingleValue(Directive.INIT_WITH_CODE);
+		code = directives.getSingleValue(Directive.PARSER_INIT_CODE);
 		appendLine( writeCode ("init with", code));
-		code = directives.getSingleValue(Directive.ACTION_CODE);
+		code = directives.getSingleValue(Directive.PARSER_ACTION_CODE);
 		appendLine( writeCode ("action code", code));
 		code = directives.getSingleValue(Directive.PARSER_CODE);
 		appendLine( writeCode ("parser code", code));
-		code = directives.getSingleValue(Directive.SCAN_WITH_CODE);
-		appendLine( writeCode ("scan with", code));
-		code = directives.getSingleValue(Directive.AFTER_REDUCE_CODE);
+		code = directives.getSingleValue(Directive.PARSER_AFTER_REDUCE_CODE);
 		appendLine( writeCode ("after reduce", code));
 	}
 
 	private void emitImports() {
-		List<String> importNames = directives.getMultipleValues(Directive.IMPORT);
-		if (importNames == null) return;
-		for (String importName : importNames) {
-			appendLine(writeProperty ("import", importName));
-		}
+		String code;
+		code = directives.getSingleValue(Directive.PARSER_IMPORT_CODE);
+		appendLine(code);
 	}
 
 	private void emitPackage() {

@@ -22,6 +22,7 @@
 
 package reader;
 
+parser import code {:
 import fr.uha.hassenforder.jcupnflex.ErrorManager;
 import fr.uha.hassenforder.jcupnflex.model.Associativity;
 import fr.uha.hassenforder.jcupnflex.model.Directive;
@@ -35,51 +36,6 @@ import fr.uha.hassenforder.jcupnflex.model.ProductionPart;
 import fr.uha.hassenforder.jcupnflex.model.RegExp;
 import fr.uha.hassenforder.jcupnflex.model.SymbolKind;
 import fr.uha.hassenforder.jcupnflex.model.Terminal;
-
-scan code {:
-	private Grammar grammar;
-	
-	public void setGrammar (Grammar grammar) {
-	   this.grammar = grammar;
-	}
-	
-	// a simple function to remove the double quotes
-	@SuppressWarnings("unused")
-	private String regexpCleaner (char toEscape) {
-		StringBuilder tmp = new StringBuilder ();
-		int current = zzStartRead;
-		while (current < zzMarkedPos) {
-			tmp.append(zzBuffer[current]);
-			if (zzBuffer[current] == toEscape && zzBuffer[current+1] == toEscape) {
-				++current;
-			}
-			++current;
-		}
-		return tmp.toString();
-	}
-		
-	@SuppressWarnings("unused")
-    private Symbol symbol(ETerminal symbol, int fromLine, int fromColumn, int toLine, int toColumn, Object lexem)		{
-       AdvancedSymbolFactory.Location left = new AdvancedSymbolFactory.Location (fromLine, fromColumn);
-       AdvancedSymbolFactory.Location right = new AdvancedSymbolFactory.Location (toLine, toColumn);
-       return symbolFactory.newSymbol(symbol, left, right, lexem);
-    }
-
-	@SuppressWarnings("unused")
-    private void emit_warning(String message){
-		ErrorManager.getManager().emit_warning("Scanner at " + (yyline+1) + "(" + (yycolumn+1) + "): " + message);
-    }
-
-	@SuppressWarnings("unused")
-    private void emit_error(String message){
-		ErrorManager.getManager().emit_error("Scanner at " + (yyline+1) + "(" + (yycolumn+1) +  "): " + message);
-    }
-    
-    private ETerminal getToken (String name) {
-		if (grammar.getTerminal(name) != null) return ETerminal.SYMBOL_TERMINAL;
-		if (grammar.getNonTerminal(name) != null) return ETerminal.SYMBOL_NONTERMINAL;
-		return ETerminal.ID;
-	}
 :}
 
 parser code {:
@@ -103,7 +59,7 @@ parser code {:
     
 :}
 
-action code {:
+parser action code {:
 
     private Grammar getGrammar() {
         return parser.grammar;
@@ -170,6 +126,57 @@ action code {:
 		emit_warning("Unrecognized character '"+yytext()+"' -- ignored");
 	}    
 
+:}
+
+scanner import code {:
+import fr.uha.hassenforder.jcupnflex.ErrorManager;
+import fr.uha.hassenforder.jcupnflex.model.Grammar;
+:}
+
+scanner code {:
+	private Grammar grammar;
+	
+	public void setGrammar (Grammar grammar) {
+	   this.grammar = grammar;
+	}
+	
+	// a simple function to remove the double quotes
+	@SuppressWarnings("unused")
+	private String regexpCleaner (char toEscape) {
+		StringBuilder tmp = new StringBuilder ();
+		int current = zzStartRead;
+		while (current < zzMarkedPos) {
+			tmp.append(zzBuffer[current]);
+			if (zzBuffer[current] == toEscape && zzBuffer[current+1] == toEscape) {
+				++current;
+			}
+			++current;
+		}
+		return tmp.toString();
+	}
+		
+	@SuppressWarnings("unused")
+    private Symbol symbol(ETerminal symbol, int fromLine, int fromColumn, int toLine, int toColumn, Object lexem)		{
+       AdvancedSymbolFactory.Location left = new AdvancedSymbolFactory.Location (fromLine, fromColumn);
+       AdvancedSymbolFactory.Location right = new AdvancedSymbolFactory.Location (toLine, toColumn);
+       return symbolFactory.newSymbol(symbol, left, right, lexem);
+    }
+
+	@SuppressWarnings("unused")
+    private void emit_warning(String message){
+		ErrorManager.getManager().emit_warning("Scanner at " + (yyline+1) + "(" + (yycolumn+1) + "): " + message);
+    }
+
+	@SuppressWarnings("unused")
+    private void emit_error(String message){
+		ErrorManager.getManager().emit_error("Scanner at " + (yyline+1) + "(" + (yycolumn+1) +  "): " + message);
+    }
+    
+    private ETerminal getToken (String name) {
+		if (grammar.getTerminal(name) != null) return ETerminal.SYMBOL_TERMINAL;
+		if (grammar.getNonTerminal(name) != null) return ETerminal.SYMBOL_NONTERMINAL;
+		return ETerminal.ID;
+	}
 :}
 
 terminal String			PACKAGE, IMPORT, CODE, ACTION, PARSER, STATE, TERMINAL, NONTERMINAL, INIT, 
