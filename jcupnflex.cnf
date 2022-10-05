@@ -166,9 +166,11 @@ action code {:
 		return sym;
 	}
     
-:}
+    private void fallback () {
+		emit_warning("Unrecognized character '"+yytext()+"' -- ignored");
+	}    
 
-terminal void		SUPPRESS;
+:}
 
 terminal String			PACKAGE, IMPORT, CODE, ACTION, PARSER, STATE, TERMINAL, NONTERMINAL, INIT, 
 						SCAN, WITH, START, PRECEDENCE, LEFT, RIGHT, NONASSOC, SUPER, EXTENDS, 
@@ -484,8 +486,33 @@ robust_id			::=	ID
 							:}
 					;
 
+//macros
+terminal void	Newline, Whitespace;
+terminal void	Comment, TraditionalComment, EndOfLineComment, CommentContent;
+terminal void	ident;
+
+Newline 			::= `\r | \n | \r\n` ;
+
+Whitespace			::=	 `[ \t\f] | {Newline}` ;
+
+Comment				::=	`{TraditionalComment} | {EndOfLineComment}` ;
+
+TraditionalComment	::=	`"/*" {CommentContent} \*+ "/"` ;
+EndOfLineComment	::= `"//" [^\r\n]* {Newline}` ;
+CommentContent		::=	`( [^*] | \*+[^*/] )*` ;
+
+ident				::=	`([:jletter:] | "_" ) ([:jletterdigit:] | [:jletter:] | "_" )* | [:jletterdigit:]+` ;
+
+//terminals
+
+terminal 			SUPPRESS;
+
+SUPPRESS		::=	`{Whitespace}` {: :}
+				|	`{Comment}` {: :}
+				;
+
 ID|SYMBOL_TERMINAL|SYMBOL_NONTERMINAL
-					::=	{: return symbol(getToken(yytext()), yytext()); :}
+					::=	`{ident}`	{: return symbol(getToken(yytext()), yytext()); :}
 					;
 
 CODE_STRING			::=	"{:" ~ ":}";
@@ -510,7 +537,4 @@ REDUCE				::= "reduce" ;
 REGEXP				::= ```([^``]|``)*```		{: return symbol(ETerminal.REGEXP, regexpCleaner('`')); :}
 					|	`'([^'']|'')*'`			{: return symbol(ETerminal.REGEXP, regexpCleaner('\'')); :}
 					|	`"([^\""]|\""\"")*"`	{: return symbol(ETerminal.REGEXP, regexpCleaner('"')); :}
-					;
-					
-FALLBACK			::=	`[^]`					{: emit_warning("Unrecognized character '"+yytext()+"' -- ignored"); :}
 					;

@@ -152,7 +152,9 @@ nonterminal 				symbol_spec, symbol_decl, symbol_kind, symbol_type, symbol_list,
 nonterminal 				precedence_spec, precedence_list, precterminal_id, associativity_decl;
 nonterminal 				expect_spec;
 nonterminal 				start_spec;
-nonterminal 				production_spec, lhs_nonterminal, lhs_terminal, rhs_list, rhs;
+nonterminal 				production_spec;
+nonterminal					lhs_nonterminal, rhs_nt_list, rhs_nt;
+nonterminal					lhs_terminal, rhs_t_list, rhs_t;
 
 nonterminal ProductionPart	wild_symbol_id;
 
@@ -326,17 +328,8 @@ start_spec			::=	START WITH symbol_id:name
 							:}
 					;
 
-production_spec		::=	lhs_nonterminal COLON_COLON_EQUALS rhs_list
-					|	lhs_terminal COLON_COLON_EQUALS REGEXP:regexp CODE_STRING?:code
-							{:
-								Production production = getFactory().createTerminalProduction(lhs, regexp, code);
-								getGrammar().addProduction(production);
-							:}
-					|	lhs_terminal COLON_COLON_EQUALS REGEXP:from TILDA REGEXP:to CODE_STRING?:code
-							{:
-								Production production = getFactory().createTerminalProduction(lhs, from, to, code);
-								getGrammar().addProduction(production);
-							:}
+production_spec		::=	lhs_nonterminal COLON_COLON_EQUALS rhs_nt_list
+					|	lhs_terminal COLON_COLON_EQUALS rhs_t_list
 					;
 
 lhs_nonterminal		::=	SYMBOL_NONTERMINAL:lhs_id {: updateLhs(getKnownNonTerminal(lhs_id$, lhs_id)); :} 
@@ -345,12 +338,27 @@ lhs_nonterminal		::=	SYMBOL_NONTERMINAL:lhs_id {: updateLhs(getKnownNonTerminal(
 lhs_terminal		::= SYMBOL_TERMINAL:lhs_id ( BAR SYMBOL_TERMINAL ) *	{: updateLhs(getKnownTerminal(lhs_id$, lhs_id)); :}
 					;
 
-rhs_list			::=	rhs ( BAR rhs ) *
+rhs_nt_list			::=	rhs_nt ( BAR rhs_nt ) *
 					;
 
-rhs					::=	prod_part*:rhs prod_precedence?:precedence 
+rhs_nt				::=	prod_part*:rhs prod_precedence?:precedence 
 							{:
 								Production production = getFactory().createNonTerminalProduction(lhs, rhs, precedence);
+								getGrammar().addProduction(production);
+							:}
+					;
+
+rhs_t_list			::=	rhs_t ( BAR rhs_t ) *
+					;
+
+rhs_t				::=	REGEXP:regexp CODE_STRING?:code
+							{:
+								Production production = getFactory().createTerminalProduction(lhs, regexp, code);
+								getGrammar().addProduction(production);
+							:}
+					|	REGEXP:from TILDA REGEXP:to CODE_STRING?:code
+							{:
+								Production production = getFactory().createTerminalProduction(lhs, from, to, code);
 								getGrammar().addProduction(production);
 							:}
 					;

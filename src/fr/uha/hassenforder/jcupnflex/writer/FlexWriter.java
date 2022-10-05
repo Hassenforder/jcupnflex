@@ -73,9 +73,33 @@ public class FlexWriter extends AbstractWriter {
 		}
 	}
 
+	private StringBuilder writeMacro(String name, String regexp) {
+		StringBuilder tmp = new StringBuilder();
+		tmp.append(name);
+		tmp.append(" = ");
+		switch (regexp.charAt(0)) {
+		case '\'' :
+			tmp.append(regexp);
+			break;
+		case '\"' :
+			tmp.append(regexp);
+			break;
+		case '`' :
+			tmp.append(regexp.substring(1, regexp.length()-1));
+			break;
+		default :
+			break;
+		}
+		return tmp;
+	}
+
 	private void emitMacros() {
-		// TODO Auto-generated method stub
-		
+		for (List<TerminalProduction> terminals : ordered.get(ProductionKind.TERMINAL_SIMPLE).values()) {
+			for (TerminalProduction terminal : terminals) {
+				if (! "void".equals(terminal.getLhs().getType())) continue;
+				appendLine(writeMacro (terminal.getLhs().getName(), terminal.getRegexp()));
+			}
+		}
 	}
 
 	private void emitStates() {
@@ -248,7 +272,7 @@ public class FlexWriter extends AbstractWriter {
 
 	private int computeComplexity(String regexp) {
 		int starCount = count(regexp, '*');
-		int plusCount = count(regexp, '*');
+		int plusCount = count(regexp, '+');
 		int charCount = regexp.length();
 		return starCount*100+plusCount*50+charCount;
 	}
@@ -269,9 +293,6 @@ public class FlexWriter extends AbstractWriter {
 			if (terminal == null) continue;
 			int complexity = 0;
 			switch (production.getKind()) {
-			case TERMINAL_FALLBACK:
-				complexity = 0;
-				break;
 			case TERMINAL_REGION:
 				complexity = computeComplexity (terminal.getFrom());
 				break;
@@ -309,6 +330,7 @@ public class FlexWriter extends AbstractWriter {
 		if (ordered.containsKey(ProductionKind.TERMINAL_SIMPLE)) {
 			for (List<TerminalProduction> terminals : ordered.get(ProductionKind.TERMINAL_SIMPLE).values()) {
 				for (TerminalProduction terminal : terminals) {
+					if ("void".equals(terminal.getLhs().getType())) continue;
 					appendLine(writeSimpleRegExp (terminal.getLhs().getType(), terminal.getLhs().getName(), terminal.getRegexp(), terminal.getCode()));
 				}
 			}
@@ -316,11 +338,13 @@ public class FlexWriter extends AbstractWriter {
 		if (ordered.containsKey(ProductionKind.TERMINAL_REGION)) {
 			for (List<TerminalProduction> terminals : ordered.get(ProductionKind.TERMINAL_REGION).values()) {
 				for (TerminalProduction terminal : terminals) {
+					if ("void".equals(terminal.getLhs().getType())) continue;
 					appendLine(writeRegionStartRegExp (terminal.getFrom(), terminal.getRegion()));
 				}
 			}
 		}
 		appendLine("}");
+		newLine();
 		if (ordered.containsKey(ProductionKind.TERMINAL_REGION)) {
 			for (List<TerminalProduction> terminals : ordered.get(ProductionKind.TERMINAL_REGION).values()) {
 				for (TerminalProduction terminal : terminals) {
@@ -333,16 +357,12 @@ public class FlexWriter extends AbstractWriter {
 					appendLine(writeRegionEndRegExp (terminal.getTo(), terminal.getRegion()));
 					appendLine(writeRegionCollectRegExp (null, terminal.getRegion()));
 					appendLine("}");
+					newLine();
 				}
 			}
 		}
-		if (ordered.containsKey(ProductionKind.TERMINAL_FALLBACK)) {
-			for (List<TerminalProduction> terminals : ordered.get(ProductionKind.TERMINAL_REGION).values()) {
-				for (TerminalProduction terminal : terminals) {
-					appendLine(writeSimpleRegExp (terminal.getLhs().getType(), terminal.getLhs().getName(), terminal.getRegexp(), terminal.getCode()));
-				}
-			}
-		}
+		newLine();
+		appendLine("[^]\t\t\t { fallback(); }");
 	}
 
 	public void generate() {

@@ -53,7 +53,7 @@ public class TerminalProduction extends Production {
 	public ProductionKind getKind() {
 		if (this.regexp != null) return ProductionKind.TERMINAL_SIMPLE;
 		if (this.from != null && this.to != null) return ProductionKind.TERMINAL_REGION;
-		return ProductionKind.TERMINAL_FALLBACK;
+		return null;
 	}
 
 	@Override

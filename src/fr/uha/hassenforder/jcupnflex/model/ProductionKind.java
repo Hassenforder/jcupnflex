@@ -19,7 +19,6 @@ public enum ProductionKind {
 	NONTERMINAL,
 	TERMINAL_SIMPLE,
 	TERMINAL_REGION,
-	TERMINAL_FALLBACK,
 
 // ProductionPart
 	LIST,
