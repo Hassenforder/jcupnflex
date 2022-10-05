@@ -12,10 +12,10 @@ public class Options {
 	private List<String> inputFiles = new ArrayList<>();
 
 	/** Pattern of the name of the generated jcup file. */
-	private String jcupPattern = "Parser-%s.cup!";
+	private String jcupPattern = "Parser-%s.cup";
 
 	/** Pattern of the name of the generated jflex file. */
-	private String flexPattern = "Scanner-%s.flex!";
+	private String flexPattern = "Scanner-%s.flex";
 
 	/** Generate a jcup file. */
 	private boolean jcupGeneration = true;

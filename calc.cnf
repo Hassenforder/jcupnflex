@@ -1,7 +1,9 @@
 package calculator;
 
+parser import code {:
 import java.util.TreeMap;
 import java.util.Map;
+:}
 
 parser code {:
     
@@ -32,7 +34,12 @@ parser code {:
 
 :}
 
-terminal void		SUPPRESS;
+scanner code {:
+    private void fallback () {
+		throw new Error("Unrecognized character '"+yytext()+"' -- ignored");
+	}    
+:}
+
 terminal			EOLN;
 terminal Integer	NUMBER;
 terminal String		ID;
@@ -40,11 +47,12 @@ terminal			UNARIES;
    
 nonterminal 		command, list, instr;
 nonterminal Integer expr;
-nonterminal			eolnOpt;
 
 precedence left		'+', '-';
 precedence left		'*', '/';
 precedence right	UNARIES;
+
+start with command;
 
 command	::=	list
 		;
@@ -66,6 +74,8 @@ expr	::=	expr:e1	'+'	expr:e2		{: RESULT = e1 + e2; :}
 		|	NUMBER:n				{: RESULT = n; :}
 		|	ID:n					{: RESULT = parser.getValue(n); :}
 		;
+
+terminal SUPPRESS;
 
 SUPPRESS::=	`[ \t\f]`				{: :}
 		;

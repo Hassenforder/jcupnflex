@@ -90,7 +90,7 @@ public class Main {
     	}
     	if (options.getInputFiles().isEmpty()) {
     		process ("jcupnflex.cnf");
-//    		process ("calc.cnf");
+    		process ("calc.cnf");
     	}
     	return true;
 	}

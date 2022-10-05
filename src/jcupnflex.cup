@@ -145,7 +145,6 @@ terminal String			REGEXP;
 nonterminal					spec;
 nonterminal					package_spec;
 nonterminal 				parser_spec;
-nonterminal 				import_spec;
 nonterminal 				option_spec, option_list, option_;
 nonterminal 				custom_code_spec;
 nonterminal 				symbol_spec, symbol_decl, symbol_kind, symbol_type, symbol_list, new_symbol_id;
@@ -163,7 +162,7 @@ nonterminal 				grammar;
 nonterminal Directive		key_code;
 
 nonterminal String  		symbol_id, label_id, robust_id;
-nonterminal StringBuilder	multipart_id, import_id, type_id, typearglist, typeargument, wildcard;
+nonterminal StringBuilder	multipart_id, type_id, typearglist, typeargument, wildcard;
 
 nonterminal ProductionPart	prod_part;
 nonterminal Terminal		prod_precedence;
@@ -382,10 +381,6 @@ label_id			::=	COLON robust_id:label				{: RESULT = label; :}
 
 multipart_id		::=	robust_id:id						{: RESULT = new StringBuilder(id); :}
 					|	multipart_id:list DOT robust_id:id	{: RESULT = list.append('.').append(id); :}
-					;
-
-import_id			::=	multipart_id:id						{: RESULT = id; :}
-					|	multipart_id:list DOT STAR			{: RESULT = list.append(".*"); :}
 					;
 
 type_id				::= multipart_id:id						{: RESULT = id; :}

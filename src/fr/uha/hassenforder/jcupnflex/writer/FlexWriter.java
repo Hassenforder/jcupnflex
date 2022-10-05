@@ -79,7 +79,9 @@ public class FlexWriter extends AbstractWriter {
 		tmp.append(" = ");
 		switch (regexp.charAt(0)) {
 		case '\'' :
-			tmp.append(regexp);
+			tmp.append('"');
+			tmp.append(regexp.substring(1, regexp.length()-1));
+			tmp.append('"');
 			break;
 		case '\"' :
 			tmp.append(regexp);
@@ -121,7 +123,9 @@ public class FlexWriter extends AbstractWriter {
 		tmp.append("  ");
 		switch (regexp.charAt(0)) {
 		case '\'' :
-			tmp.append(regexp);
+			tmp.append('"');
+			tmp.append(regexp.substring(1, regexp.length()-1));
+			tmp.append('"');
 			break;
 		case '\"' :
 			tmp.append(regexp);
@@ -193,7 +197,7 @@ public class FlexWriter extends AbstractWriter {
 		tmp.append("$Line");
 		tmp.append(" = yyline; ");
 		tmp.append(name);
-		tmp.append("$column");
+		tmp.append("$Column");
 		tmp.append(" = yycolumn; ");
 		tmp.append("yybegin (");
 		tmp.append(name);
@@ -240,6 +244,8 @@ public class FlexWriter extends AbstractWriter {
 		tmp.append("+1 ");
 		tmp.append(", yyline+1 ");
 		tmp.append(", yycolumn+1 ");
+		tmp.append(", ");
+		tmp.append(name);
 		tmp.append("$Content.toString()");
 		tmp.append("); ");
 		tmp.append("}");
@@ -257,6 +263,7 @@ public class FlexWriter extends AbstractWriter {
 		tmp.append("  [^]");
 		tmp.append("\t\t");
 		tmp.append("{ ");
+		tmp.append(name);
 		tmp.append("$Content.append(yytext()); ");
 		tmp.append("}");
 		return tmp;
@@ -351,6 +358,7 @@ public class FlexWriter extends AbstractWriter {
 					StringBuilder tmp = new StringBuilder();
 					tmp.append("<");
 					tmp.append(terminal.getRegion());
+					tmp.append("$State");
 					tmp.append(">");
 					tmp.append(" {");
 					appendLine(tmp);

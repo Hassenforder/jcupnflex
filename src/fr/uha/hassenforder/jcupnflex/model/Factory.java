@@ -20,7 +20,7 @@ public class Factory implements IFactory {
 
 	static private String buildRegExpName () {
 		StringBuilder tmp = new StringBuilder ();
-		tmp.append("__REGEXP$");
+		tmp.append("__REGEXP_");
 		tmp.append(++instance);
 		tmp.append("__");
 		return tmp.toString();

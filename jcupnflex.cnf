@@ -122,10 +122,6 @@ parser action code {:
 		return sym;
 	}
     
-    private void fallback () {
-		emit_warning("Unrecognized character '"+yytext()+"' -- ignored");
-	}    
-
 :}
 
 scanner import code {:
@@ -177,32 +173,37 @@ scanner code {:
 		if (grammar.getNonTerminal(name) != null) return ETerminal.SYMBOL_NONTERMINAL;
 		return ETerminal.ID;
 	}
+
+    private void fallback () {
+		emit_warning("Unrecognized character '"+yytext()+"' -- ignored");
+	}    
+
 :}
 
-terminal String			PACKAGE, IMPORT, CODE, ACTION, PARSER, STATE, TERMINAL, NONTERMINAL, INIT, 
-						SCAN, WITH, START, PRECEDENCE, LEFT, RIGHT, NONASSOC, SUPER, EXTENDS, 
+terminal String			PACKAGE, IMPORT, CODE, ACTION, PARSER, TERMINAL, NONTERMINAL, INIT, 
+						SCANNER, WITH, START, PRECEDENCE, LEFT, RIGHT, NONASSOC, SUPER, EXTENDS, 
 						AFTER, REDUCE, OPTION, EXPECT;
 
 terminal String			ID, CODE_STRING;
 
 terminal String			SYMBOL_TERMINAL;
 terminal String			SYMBOL_NONTERMINAL;
-terminal String			SYMBOL_STATE;
 
 terminal String			REGEXP;
 
 nonterminal					spec;
 nonterminal					package_spec;
 nonterminal 				parser_spec;
-nonterminal 				import_spec;
 nonterminal 				option_spec, option_list, option_;
 nonterminal 				custom_code_spec;
-nonterminal					state_spec;
 nonterminal 				symbol_spec, symbol_decl, symbol_kind, symbol_type, symbol_list, new_symbol_id;
 nonterminal 				precedence_spec, precedence_list, precterminal_id, associativity_decl;
 nonterminal 				expect_spec;
 nonterminal 				start_spec;
-nonterminal 				production_spec, rhs_list, rhs;
+nonterminal 				production_spec;
+nonterminal					lhs_nonterminal, rhs_nt_list, rhs_nt;
+nonterminal					lhs_terminal, rhs_t_list, rhs_t;
+
 nonterminal ProductionPart	wild_symbol_id;
 
 nonterminal 				grammar;
@@ -210,7 +211,7 @@ nonterminal 				grammar;
 nonterminal Directive		key_code;
 
 nonterminal String  		symbol_id, label_id, robust_id;
-nonterminal StringBuilder	multipart_id, import_id, type_id, typearglist, typeargument, wildcard;
+nonterminal StringBuilder	multipart_id, type_id, typearglist, typeargument, wildcard;
 
 nonterminal ProductionPart	prod_part;
 nonterminal Terminal		prod_precedence;
@@ -221,12 +222,10 @@ grammar				::=	( spec ) *
 					;
 
 spec				::=	package_spec ';'
-					|	import_spec ';'
 				    |	option_spec ';'
 			    	|	parser_spec ';'
 				    |	custom_code_spec
 					|	symbol_spec ';'
-					|	state_spec ';'
 					|	precedence_spec ';'
 					|	expect_spec ';'
 					|	start_spec ';'
@@ -238,14 +237,6 @@ package_spec		::=	PACKAGE	multipart_id:id
 							{:
 								if ( ! getDirectives().setDirective(Directive.PACKAGE_NAME, id.toString())) {
 									ErrorManager.getManager().emit_warning("Redundant package name (skipping)");
-								}
-							:}
-					;
-
-import_spec			::=	IMPORT import_id:id
-							{:
-								if ( ! getDirectives().addDirective(Directive.IMPORT, id.toString())) {
-									ErrorManager.getManager().emit_warning("Redundant import (skipping)");
 								}
 							:}
 					;
@@ -286,16 +277,15 @@ custom_code_spec	::=	key_code:key CODE_STRING:code
 							:}
 					;
 
-key_code			::=	ACTION CODE							{: RESULT = Directive.ACTION_CODE; :}
+key_code			::=	PARSER ACTION CODE					{: RESULT = Directive.PARSER_ACTION_CODE; :}
+					|	PARSER IMPORT CODE					{: RESULT = Directive.PARSER_IMPORT_CODE; :}
 					|	PARSER CODE							{: RESULT = Directive.PARSER_CODE; :}
-					|	INIT WITH							{: RESULT = Directive.INIT_WITH_CODE; :}
-					|	SCAN WITH							{: RESULT = Directive.SCAN_WITH_CODE; :}
-					|	AFTER REDUCE						{: RESULT = Directive.AFTER_REDUCE_CODE; :}
+					|	PARSER INIT WITH					{: RESULT = Directive.PARSER_INIT_CODE; :}
+					|	PARSER AFTER REDUCE					{: RESULT = Directive.PARSER_AFTER_REDUCE_CODE; :}
+					|	SCANNER IMPORT CODE					{: RESULT = Directive.SCANNER_IMPORT_CODE; :}
+					|	SCANNER CODE						{: RESULT = Directive.SCANNER_CODE; :}
 					;
 					
-state_spec			::=	STATE {: currentKind = SymbolKind.STATE; :} symbol_list {: currentType = null; :}
-					;
-
 symbol_spec			::= symbol_decl symbol_list				{: currentType = null; :}
 					;
 
@@ -378,20 +368,37 @@ start_spec			::=	START WITH symbol_id:name
 							:}
 					;
 
-production_spec		::=	SYMBOL_NONTERMINAL:lhs_id {: updateLhs(getKnownNonTerminal(lhs_id$, lhs_id)); :} '::=' rhs_list
-					|	SYMBOL_TERMINAL:lhs_id {: updateLhs(getKnownTerminal(lhs_id$, lhs_id)); :} '::=' SYMBOL_STATE?:state REGEXP:regexp CODE_STRING?:code
+production_spec		::=	lhs_nonterminal '::=' rhs_nt_list
+					|	lhs_terminal '::=' rhs_t_list
+					;
+
+lhs_nonterminal		::=	SYMBOL_NONTERMINAL:lhs_id {: updateLhs(getKnownNonTerminal(lhs_id$, lhs_id)); :} 
+					;
+
+lhs_terminal		::= SYMBOL_TERMINAL:lhs_id ( '|' SYMBOL_TERMINAL ) *	{: updateLhs(getKnownTerminal(lhs_id$, lhs_id)); :}
+					;
+
+rhs_nt_list			::=	rhs_nt ( '|' rhs_nt ) *
+					;
+
+rhs_nt				::=	prod_part*:rhs prod_precedence?:precedence 
 							{:
-								Production production = getFactory().createTerminalProduction(lhs, state, regexp, code);
+								Production production = getFactory().createNonTerminalProduction(lhs, rhs, precedence);
 								getGrammar().addProduction(production);
 							:}
 					;
 
-rhs_list			::=	rhs ( '|' rhs ) *
+rhs_t_list			::=	rhs_t ( '|' rhs_t ) *
 					;
 
-rhs					::=	prod_part*:rhs prod_precedence?:precedence 
+rhs_t				::=	REGEXP:regexp CODE_STRING?:code
 							{:
-								Production production = getFactory().createNonTerminalProduction(lhs, rhs, precedence);
+								Production production = getFactory().createTerminalProduction(lhs, regexp, code);
+								getGrammar().addProduction(production);
+							:}
+					|	REGEXP:from '~' REGEXP:to CODE_STRING?:code
+							{:
+								Production production = getFactory().createTerminalProduction(lhs, from, to, code);
 								getGrammar().addProduction(production);
 							:}
 					;
@@ -425,12 +432,8 @@ multipart_id		::=	robust_id:id						{: RESULT = new StringBuilder(id); :}
 					|	multipart_id:list '.' robust_id:id	{: RESULT = list.append('.').append(id); :}
 					;
 
-import_id			::=	multipart_id:id						{: RESULT = id; :}
-					|	multipart_id:list '.' '*'			{: RESULT = list.append(".*"); :}
-					;
-
 type_id				::= multipart_id:id						{: RESULT = id; :}
-					|	type_id:id '<' '>'			{: RESULT = id.append("[]"); :}
+					|	type_id:id '[' ']'			{: RESULT = id.append("[]"); :}
 					|	multipart_id:id '<' typearglist:types '>'	{: RESULT = id.append('<').append(types).append('>'); :}
 					;
 
@@ -457,7 +460,7 @@ symbol_id			::=	ID
 					|	ACTION
 					|	PARSER
 					|	INIT
-					|	SCAN
+					|	SCANNER
 					|	WITH
 					|	LEFT
 					|	RIGHT
@@ -476,7 +479,7 @@ robust_id			::=	ID
 					|	TERMINAL
 					|	NONTERMINAL
 					|	INIT
-					|	SCAN
+					|	SCANNER
 					|	WITH
 					|	START
 					|	EXPECT
@@ -533,7 +536,7 @@ CODE				::= "code" ;
 ACTION				::= "action" ;
 PARSER				::= "parser" ;
 INIT				::= "init" ;
-SCAN				::= "scan" ;
+SCANNER				::= "scanner" ;
 WITH				::= "with" ;
 LEFT				::= "left" ;
 RIGHT				::= "right" ;
@@ -541,7 +544,7 @@ NONASSOC			::= "nonassoc" ;
 AFTER				::= "after";
 REDUCE				::= "reduce" ;
 
-REGEXP				::= ```([^``]|``)*```		{: return symbol(ETerminal.REGEXP, regexpCleaner('`')); :}
-					|	`'([^'']|'')*'`			{: return symbol(ETerminal.REGEXP, regexpCleaner('\'')); :}
-					|	`"([^\""]|\""\"")*"`	{: return symbol(ETerminal.REGEXP, regexpCleaner('"')); :}
+REGEXP				::= ```([^``]|````)*```		{: return symbol(ETerminal.REGEXP, regexpCleaner('`')); :}
+					|	`'([^']|'')*'`			{: return symbol(ETerminal.REGEXP, regexpCleaner('\'')); :}
+					|	`\"([^\"]|\"\")*\"`		{: return symbol(ETerminal.REGEXP, regexpCleaner('"')); :}
 					;
