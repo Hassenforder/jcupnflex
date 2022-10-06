@@ -56,20 +56,46 @@ public class FlexWriter extends AbstractWriter {
 		String code = directives.getSingleValue(Directive.SCANNER_CODE);
 		appendLine(writeCode (code));
 		if (ordered.containsKey(ProductionKind.TERMINAL_REGION)) {
-			for (List<TerminalProduction> terminals : ordered.get(ProductionKind.TERMINAL_REGION).values()) {
-				for (TerminalProduction terminal : terminals) {
-					StringBuilder content = new StringBuilder ();
-					content.append("\tprivate StringBuilder ");
-					content.append(terminal.getRegion());
-					content.append("$Content;\n");
-					content.append("\tprivate int ");
-					content.append(terminal.getRegion());
-					content.append("$Line, ");
-					content.append(terminal.getRegion());
-					content.append("$Column;\n");
-					appendLine(writeCode (content.toString()));
-				}
-			}
+			appendLine(writeCode ("""
+				    private class Region {
+				    	ETerminal token;
+				    	StringBuilder tmp;
+				    	int fromLine;
+				    	int fromColumn;
+				    	
+						public Region(ETerminal token) {
+							super();
+							this.token = token;
+							this.tmp = new StringBuilder();
+							this.fromLine = yyline;
+							this.fromColumn = yycolumn;
+						}
+						
+				    }
+
+				    private java.util.Map<String, Region> regions = new java.util.TreeMap<>();
+				    
+				    private void startRegion (ETerminal token, int state) {
+				    	regions.put(token.name(), new Region (token));
+				    	yybegin (state);
+				    }
+
+				    private void appendRegion (ETerminal token, String content) {
+				    	if (! regions.containsKey(token.name())) return;
+				    	regions.get(token.name()).tmp.append(content);
+				    }
+
+				    private Symbol endRegion (ETerminal token) {
+				    	Region region = regions.get(token.name());
+				    	if (region == null) return null;
+				    	regions.remove(token.name());
+				    	yybegin (YYINITIAL);
+				    	String content = regions.get(token.name()).tmp.toString();
+				        AdvancedSymbolFactory.Location left = new AdvancedSymbolFactory.Location (region.fromLine+1, region.fromColumn+1);
+				        AdvancedSymbolFactory.Location right = new AdvancedSymbolFactory.Location (yyline+1, yycolumn+yylength());
+				        return symbolFactory.newSymbol(region.token, left, right, content);
+				    }
+				    """));
 		}
 	}
 
@@ -190,16 +216,9 @@ public class FlexWriter extends AbstractWriter {
 		}
 		tmp.append("\t\t");
 		tmp.append("{ ");
+		tmp.append("startRegion (ETerminal.");
 		tmp.append(name);
-		tmp.append("$Content");
-		tmp.append(" = new StringBuilder(); ");
-		tmp.append(name);
-		tmp.append("$Line");
-		tmp.append(" = yyline; ");
-		tmp.append(name);
-		tmp.append("$Column");
-		tmp.append(" = yycolumn; ");
-		tmp.append("yybegin (");
+		tmp.append(", ");
 		tmp.append(name);
 		tmp.append("$State");
 		tmp.append("); ");
@@ -231,22 +250,8 @@ public class FlexWriter extends AbstractWriter {
 		}
 		tmp.append("\t\t");
 		tmp.append("{ ");
-		tmp.append("yybegin (YYINITIAL); ");
-		tmp.append("return symbol(ETerminal.");
+		tmp.append("return endRegion (ETerminal.");
 		tmp.append(name);
-		tmp.append(", ");
-		tmp.append(name);
-		tmp.append("$Line");
-		tmp.append("+1 ");
-		tmp.append(", ");
-		tmp.append(name);
-		tmp.append("$Column");
-		tmp.append("+1 ");
-		tmp.append(", yyline+1 ");
-		tmp.append(", yycolumn+1 ");
-		tmp.append(", ");
-		tmp.append(name);
-		tmp.append("$Content.toString()");
 		tmp.append("); ");
 		tmp.append("}");
 		return tmp;
@@ -263,8 +268,10 @@ public class FlexWriter extends AbstractWriter {
 		tmp.append("  [^]");
 		tmp.append("\t\t");
 		tmp.append("{ ");
+		tmp.append("appendRegion (ETerminal.");
 		tmp.append(name);
-		tmp.append("$Content.append(yytext()); ");
+		tmp.append(", yytext()");
+		tmp.append("); ");
 		tmp.append("}");
 		return tmp;
 	}
