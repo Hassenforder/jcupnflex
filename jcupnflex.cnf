@@ -497,9 +497,9 @@ robust_id			::=	ID
 					;
 
 //macros
-terminal void	Newline, Whitespace;
-terminal void	Comment, TraditionalComment, EndOfLineComment, CommentContent;
-terminal void	ident;
+terminal macro	Newline, Whitespace;
+terminal macro	Comment, TraditionalComment, EndOfLineComment, CommentContent;
+terminal macro	ident;
 
 Newline 			::= `\r | \n | \r\n` ;
 
@@ -515,7 +515,7 @@ ident				::=	`([:jletter:] | "_" ) ([:jletterdigit:] | [:jletter:] | "_" )* | [:
 
 //terminals
 
-terminal 			SUPPRESS;
+terminal void	SUPPRESS;
 
 SUPPRESS		::=	`{Whitespace}` {: :}
 				|	`{Comment}` {: :}

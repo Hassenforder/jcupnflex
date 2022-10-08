@@ -57,45 +57,56 @@ public class FlexWriter extends AbstractWriter {
 		appendLine(writeCode (code));
 		if (ordered.containsKey(ProductionKind.TERMINAL_REGION)) {
 			appendLine(writeCode ("""
-				    private class Region {
-				    	ETerminal token;
-				    	StringBuilder tmp;
-				    	int fromLine;
-				    	int fromColumn;
-				    	
-						public Region(ETerminal token) {
-							super();
-							this.token = token;
-							this.tmp = new StringBuilder();
-							this.fromLine = yyline;
-							this.fromColumn = yycolumn;
-						}
-						
-				    }
+    private class Region {
+    	ETerminal token;
+    	StringBuilder tmp;
+    	int fromLine;
+    	int fromColumn;
+    	
+		public Region(ETerminal token) {
+			super();
+			this.token = token;
+			this.tmp = new StringBuilder();
+			this.fromLine = yyline;
+			this.fromColumn = yycolumn;
+		}
+		
+    }
 
-				    private java.util.Map<String, Region> regions = new java.util.TreeMap<>();
-				    
-				    private void startRegion (ETerminal token, int state) {
-				    	regions.put(token.name(), new Region (token));
-				    	yybegin (state);
-				    }
+  private java.util.Stack<Region> regions = new java.util.Stack<>();
 
-				    private void appendRegion (ETerminal token, String content) {
-				    	if (! regions.containsKey(token.name())) return;
-				    	regions.get(token.name()).tmp.append(content);
-				    }
+  private void startRegion (ETerminal token, int state) {
+  	regions.push(new Region (token));
+  	yybegin (state);
+  }
 
-				    private Symbol endRegion (ETerminal token) {
-				    	Region region = regions.get(token.name());
-				    	if (region == null) return null;
-				    	regions.remove(token.name());
-				    	yybegin (YYINITIAL);
-				    	String content = regions.get(token.name()).tmp.toString();
-				        AdvancedSymbolFactory.Location left = new AdvancedSymbolFactory.Location (region.fromLine+1, region.fromColumn+1);
-				        AdvancedSymbolFactory.Location right = new AdvancedSymbolFactory.Location (yyline+1, yycolumn+yylength());
-				        return symbolFactory.newSymbol(region.token, left, right, content);
-				    }
-				    """));
+  private void appendRegion (ETerminal token, String content) {
+	  if (! regions.empty()) {
+		  Region region = regions.peek();
+		  region.tmp.append(content);
+	  }
+  }
+
+  private Symbol endRegion (ETerminal token) {
+	  int targetState = YYINITIAL;
+      Symbol symbol;
+	  Region region = null;
+	  if (! regions.empty()) {
+		  region = regions.pop();
+	  }
+      yybegin (targetState);
+      if (region == null) {
+    	  AdvancedSymbolFactory.Location position = new AdvancedSymbolFactory.Location (yyline+1, yycolumn+yylength());
+    	  symbol = symbolFactory.newSymbol(ETerminal.EOF, position, position, "");
+      } else {
+    	  String content = region.tmp.toString();
+    	  AdvancedSymbolFactory.Location left = new AdvancedSymbolFactory.Location (region.fromLine+1, region.fromColumn+1);
+    	  AdvancedSymbolFactory.Location right = new AdvancedSymbolFactory.Location (yyline+1, yycolumn+yylength());
+    	  symbol = symbolFactory.newSymbol(region.token, left, right, content);
+      }
+      return symbol;
+  }
+				    				    """));
 		}
 	}
 
@@ -124,7 +135,8 @@ public class FlexWriter extends AbstractWriter {
 	private void emitMacros() {
 		for (List<TerminalProduction> terminals : ordered.get(ProductionKind.TERMINAL_SIMPLE).values()) {
 			for (TerminalProduction terminal : terminals) {
-				if (! "void".equals(terminal.getLhs().getType())) continue;
+				// reserved type for macro regexp
+				if (! "macro".equals(terminal.getLhs().getType())) continue;
 				appendLine(writeMacro (terminal.getLhs().getName(), terminal.getRegexp()));
 			}
 		}
@@ -344,7 +356,7 @@ public class FlexWriter extends AbstractWriter {
 		if (ordered.containsKey(ProductionKind.TERMINAL_SIMPLE)) {
 			for (List<TerminalProduction> terminals : ordered.get(ProductionKind.TERMINAL_SIMPLE).values()) {
 				for (TerminalProduction terminal : terminals) {
-					if ("void".equals(terminal.getLhs().getType())) continue;
+					if ("macro".equals(terminal.getLhs().getType())) continue;
 					appendLine(writeSimpleRegExp (terminal.getLhs().getType(), terminal.getLhs().getName(), terminal.getRegexp(), terminal.getCode()));
 				}
 			}
@@ -352,7 +364,7 @@ public class FlexWriter extends AbstractWriter {
 		if (ordered.containsKey(ProductionKind.TERMINAL_REGION)) {
 			for (List<TerminalProduction> terminals : ordered.get(ProductionKind.TERMINAL_REGION).values()) {
 				for (TerminalProduction terminal : terminals) {
-					if ("void".equals(terminal.getLhs().getType())) continue;
+					if ("macro".equals(terminal.getLhs().getType())) continue;
 					appendLine(writeRegionStartRegExp (terminal.getFrom(), terminal.getRegion()));
 				}
 			}

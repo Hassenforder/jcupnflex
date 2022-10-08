@@ -1,6 +1,7 @@
 package fr.uha.hassenforder.jcupnflex.writer;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -199,6 +200,26 @@ public class CupWriter extends AbstractWriter {
 			appendLine(writeListSymbols ("precedence", property, entry.getValue()));
 		}
 	}
+
+	private TreeMap<String, List<GrammarSymbol>> orderSymbolsByType(Collection<? extends GrammarSymbol> original) {
+		TreeMap<String, List<GrammarSymbol>> ordered = new TreeMap<>();
+		for (GrammarSymbol symbol : original) {
+			String type = symbol.getType();
+			if (type == null) type = "";
+			// macro is a reserved type for macro regexp (lexer)
+			if (type.equals("macro")) continue;
+			// void is a reserved type for regexp discarding text
+			if (type.equals("void")) continue;
+			List<GrammarSymbol> list = ordered.get(type);
+			if (list == null) {
+				list = new ArrayList<>();
+				ordered.put (type, list);
+			}
+			list.add(symbol);
+		}
+		return ordered;
+	}
+
 
 	private void emitNonTerminals() {
 		TreeMap<String, List<GrammarSymbol>> ordered = orderSymbolsByType(grammar.getNonTerminals().values());

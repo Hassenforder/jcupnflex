@@ -11,7 +11,6 @@ import java.util.TreeMap;
 
 import fr.uha.hassenforder.jcupnflex.model.DirectiveSet;
 import fr.uha.hassenforder.jcupnflex.model.Grammar;
-import fr.uha.hassenforder.jcupnflex.model.GrammarSymbol;
 import fr.uha.hassenforder.jcupnflex.model.Production;
 import fr.uha.hassenforder.jcupnflex.model.Terminal;
 
@@ -132,22 +131,6 @@ public class AbstractWriter {
 				ordered.put (name, list);
 			}
 			list.add(production);
-		}
-		return ordered;
-	}
-
-	protected TreeMap<String, List<GrammarSymbol>> orderSymbolsByType(Collection<? extends GrammarSymbol> original) {
-		TreeMap<String, List<GrammarSymbol>> ordered = new TreeMap<>();
-		for (GrammarSymbol symbol : original) {
-			String type = symbol.getType();
-			if (type == null) type = "";
-			if (type.equals("void")) continue;
-			List<GrammarSymbol> list = ordered.get(type);
-			if (list == null) {
-				list = new ArrayList<>();
-				ordered.put (type, list);
-			}
-			list.add(symbol);
 		}
 		return ordered;
 	}
