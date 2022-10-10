@@ -52,6 +52,7 @@ import fr.uha.hassenforder.jcupnflex.model.Grammar;
     private ETerminal getToken (String name) {
 		if (grammar.getTerminal(name) != null) return ETerminal.SYMBOL_TERMINAL;
 		if (grammar.getNonTerminal(name) != null) return ETerminal.SYMBOL_NONTERMINAL;
+		if (grammar.getState(name) != null) return ETerminal.SYMBOL_STATE;
 		return ETerminal.ID;
 	}
 
@@ -104,6 +105,7 @@ ident = ([:jletter:] | "_" ) ([:jletterdigit:] | [:jletter:] | "_" )*
   "parser"      { return symbol(ETerminal.PARSER, yytext()); }
   "terminal"    { return symbol(ETerminal.TERMINAL, yytext()); }
   "nonterminal" { return symbol(ETerminal.NONTERMINAL, yytext()); }
+  "state"	    { return symbol(ETerminal.STATE, yytext()); }
   "init"        { return symbol(ETerminal.INIT, yytext()); }
   "scanner"     { return symbol(ETerminal.SCANNER, yytext()); }
   "with"        { return symbol(ETerminal.WITH, yytext()); }

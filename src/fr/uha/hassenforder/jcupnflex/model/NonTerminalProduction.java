@@ -31,15 +31,10 @@ public class NonTerminalProduction extends Production {
 	 * @param precedence the precedence of the production 
 	 */
 	public NonTerminalProduction(NonTerminal lhs, ProductionPart rhs, Terminal precedence) {
-		super();
+		super(ProductionKind.NONTERMINAL);
 		this.lhs = lhs;
 		this.rhs = rhs;
 		this.precedence = precedence;
-	}
-
-	@Override
-	public ProductionKind getKind() {
-		return ProductionKind.NONTERMINAL;
 	}
 
 	@Override

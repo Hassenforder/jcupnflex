@@ -11,13 +11,19 @@ import fr.uha.hassenforder.jcupnflex.model.Directive;
 import fr.uha.hassenforder.jcupnflex.model.DirectiveSet;
 import fr.uha.hassenforder.jcupnflex.model.Grammar;
 import fr.uha.hassenforder.jcupnflex.model.Production;
-import fr.uha.hassenforder.jcupnflex.model.ProductionKind;
 import fr.uha.hassenforder.jcupnflex.model.RegExp;
+import fr.uha.hassenforder.jcupnflex.model.TerminalKind;
 import fr.uha.hassenforder.jcupnflex.model.TerminalProduction;
 
 public class FlexWriter extends AbstractWriter {
 
-	private Map<ProductionKind, Map<Integer, List<TerminalProduction>>> ordered;
+	/*
+	 * sort TerminalProduction by two criterion
+	 *   name of the region to be able to create/manage region
+	 *   complexity of the rule for ordering them 
+	 *   
+	 */
+	private Map<String, Map<Integer, List<TerminalProduction>>> ordered;
 
 	public FlexWriter(Grammar grammar, DirectiveSet directives, File outputFile) {
 		super(grammar, directives, outputFile);
@@ -55,17 +61,21 @@ public class FlexWriter extends AbstractWriter {
 	private void emitFlexCodes() {
 		String code = directives.getSingleValue(Directive.SCANNER_CODE);
 		appendLine(writeCode (code));
-		if (ordered.containsKey(ProductionKind.TERMINAL_REGION)) {
+		// if we have at least a key not empty or YYINITIAL (it is a region)
+		boolean mustEmit = false;
+		for (Map.Entry<String, Map<Integer, List<TerminalProduction>>> entry : ordered.entrySet()) {
+			if (entry.getKey().isEmpty() || "YYINITIAL".equals(entry.getKey())) continue;
+			mustEmit = true;
+		}
+		if (mustEmit) {
 			appendLine(writeCode ("""
     private class Region {
-    	ETerminal token;
     	StringBuilder tmp;
     	int fromLine;
     	int fromColumn;
     	
-		public Region(ETerminal token) {
+		public Region() {
 			super();
-			this.token = token;
 			this.tmp = new StringBuilder();
 			this.fromLine = yyline;
 			this.fromColumn = yycolumn;
@@ -75,36 +85,38 @@ public class FlexWriter extends AbstractWriter {
 
   private java.util.Stack<Region> regions = new java.util.Stack<>();
 
-  private void startRegion (ETerminal token, int state) {
-  	regions.push(new Region (token));
+  private void startRegion (int state) {
+  	regions.push(new Region ());
   	yybegin (state);
   }
 
-  private void appendRegion (ETerminal token, String content) {
+  private void appendRegion (String content) {
 	  if (! regions.empty()) {
 		  Region region = regions.peek();
 		  region.tmp.append(content);
 	  }
   }
 
-  private Symbol endRegion (ETerminal token) {
-	  int targetState = YYINITIAL;
-      Symbol symbol;
+  private Region endRegion (int targetState) {
 	  Region region = null;
 	  if (! regions.empty()) {
 		  region = regions.pop();
 	  }
       yybegin (targetState);
+      return region;
+   }
+
+   @SuppressWarnings("unused")
+   private Symbol symbolRegion (Region region, ETerminal token) {
       if (region == null) {
     	  AdvancedSymbolFactory.Location position = new AdvancedSymbolFactory.Location (yyline+1, yycolumn+yylength());
-    	  symbol = symbolFactory.newSymbol(ETerminal.EOF, position, position, "");
+    	  return symbolFactory.newSymbol(token, position, position, "");
       } else {
     	  String content = region.tmp.toString();
     	  AdvancedSymbolFactory.Location left = new AdvancedSymbolFactory.Location (region.fromLine+1, region.fromColumn+1);
     	  AdvancedSymbolFactory.Location right = new AdvancedSymbolFactory.Location (yyline+1, yycolumn+yylength());
-    	  symbol = symbolFactory.newSymbol(region.token, left, right, content);
+    	  return symbolFactory.newSymbol(token, left, right, content);
       }
-      return symbol;
   }
 				    				    """));
 		}
@@ -133,7 +145,8 @@ public class FlexWriter extends AbstractWriter {
 	}
 
 	private void emitMacros() {
-		for (List<TerminalProduction> terminals : ordered.get(ProductionKind.TERMINAL_SIMPLE).values()) {
+		if (! ordered.containsKey("")) return;
+		for (List<TerminalProduction> terminals : ordered.get("").values()) {
 			for (TerminalProduction terminal : terminals) {
 				// reserved type for macro regexp
 				if (! "macro".equals(terminal.getLhs().getType())) continue;
@@ -143,22 +156,18 @@ public class FlexWriter extends AbstractWriter {
 	}
 
 	private void emitStates() {
-		if (ordered.containsKey(ProductionKind.TERMINAL_REGION)) {
-			for (List<TerminalProduction> terminals : ordered.get(ProductionKind.TERMINAL_REGION).values()) {
-				for (TerminalProduction terminal : terminals) {
-					StringBuilder content = new StringBuilder ();
-					content.append("%state ");
-					content.append(terminal.getRegion());
-					content.append("$State");
-					appendLine(content);
-				}
-			}
+		for (Map.Entry<String, Map<Integer, List<TerminalProduction>>> entry : ordered.entrySet()) {
+			if (entry.getKey().isEmpty() || "YYINITIAL".equals(entry.getKey())) continue;
+			StringBuilder content = new StringBuilder ();
+			content.append("%state ");
+			content.append(entry.getKey());
+			content.append("$State");
+			appendLine(content);
 		}
 	}
-
-	private StringBuilder writeSimpleRegExp(String type, String name, String regexp, String code) {
+	
+	private StringBuilder writeRegExpMatcher(String regexp) {
 		StringBuilder tmp = new StringBuilder();
-		tmp.append("  ");
 		switch (regexp.charAt(0)) {
 		case '\'' :
 			tmp.append('"');
@@ -174,7 +183,11 @@ public class FlexWriter extends AbstractWriter {
 		default :
 			break;
 		}
-		tmp.append("\t\t");
+		return tmp;
+	}
+	
+	private StringBuilder writeRegExpAction(String type, String name, String code) {
+		StringBuilder tmp = new StringBuilder();
 		tmp.append("{ ");
 		if (code != null) {
 			tmp.append(code);
@@ -204,148 +217,123 @@ public class FlexWriter extends AbstractWriter {
 		return tmp;
 	}
 
-	/*
-	 * we have to build a line like :
-	 * regexp 	{ $content = new StringBuilder(); $line=yyline; $column=yycolumn; yybegin($state); }
-	 * 
-	 * where $ represent a unique name base on the terminalname with a dollar sign and the remaining text
-	 */
-	private StringBuilder writeRegionStartRegExp(String regexp, String name) {
+	private StringBuilder writeSimpleRegExp(String type, String name, String regexp, String code) {
 		StringBuilder tmp = new StringBuilder();
 		tmp.append("  ");
-		switch (regexp.charAt(0)) {
-		case '\'' :
-			tmp.append(regexp);
-			break;
-		case '\"' :
-			tmp.append(regexp);
-			break;
-		case '`' :
-			tmp.append(regexp.substring(1, regexp.length()-1));
-			break;
-		default :
-			break;
-		}
+		tmp.append(writeRegExpMatcher(regexp));
 		tmp.append("\t\t");
-		tmp.append("{ ");
-		tmp.append("startRegion (ETerminal.");
-		tmp.append(name);
-		tmp.append(", ");
-		tmp.append(name);
-		tmp.append("$State");
-		tmp.append("); ");
-		tmp.append("}");
+		tmp.append(writeRegExpAction(type, name, code));
 		return tmp;
 	}
 
+	private StringBuilder writeSimple(TerminalProduction terminal) {
+		return writeSimpleRegExp(terminal.getLhs().getType(), terminal.getLhs().getName(), terminal.getRegexp(), terminal.getCode());
+	}
+	
 	/*
 	 * we have to build a line like :
-     *   regexp { yybegin(YYINITIAL); return symbol(ETerminal.$, $line+1, $column+1, yyline+1, yycolumn+1, $content.toString()); }
+	 * regexp 	{ startRegion({State}); } // state!=null
+	 * regexp 	{ startRegion({name}$State); }
+	 * 
+	 */
+	private StringBuilder writeRegionEnter(TerminalProduction terminal) {
+		StringBuilder tmp = new StringBuilder();
+		tmp.append("  ");
+		tmp.append(writeRegExpMatcher(terminal.getRegexp()));
+		tmp.append("\t\t");
+		tmp.append("{ ");
+		if (terminal.getCode() != null) {
+			tmp.append(terminal.getCode());
+		} else {
+			tmp.append("startRegion (");
+			if (terminal.getEnterState() != null) {
+				tmp.append(terminal.getEnterState());
+			} else {
+				tmp.append(terminal.getLhs().getName());
+				tmp.append("$State");
+			}
+			tmp.append("); ");
+		}
+		tmp.append("}");
+		return tmp;
+	}
+	
+	/*
+	 * we have to build a line like :
+	 * regexp		{ appendRegion(yytext()); } // regexp != null
+	 * [^]			{ appendRegion(yytext()); }
 	 * 
 	 * where $ represent a unique name base on the terminal name with a dollar sign and the remaining text
 	 */
-	private StringBuilder writeRegionEndRegExp(String regexp, String name) {
+	private StringBuilder writeRegionCollect(TerminalProduction terminal) {
 		StringBuilder tmp = new StringBuilder();
 		tmp.append("  ");
-		switch (regexp.charAt(0)) {
-		case '\'' :
-			tmp.append(regexp);
-			break;
-		case '\"' :
-			tmp.append(regexp);
-			break;
-		case '`' :
-			tmp.append(regexp.substring(1, regexp.length()-1));
-			break;
-		default :
-			break;
+		if (terminal.getRegexp() != null) {
+			tmp.append(writeRegExpMatcher(terminal.getRegexp()));
+		} else {
+			tmp.append("[^]");
 		}
 		tmp.append("\t\t");
 		tmp.append("{ ");
-		tmp.append("return endRegion (ETerminal.");
-		tmp.append(name);
+		tmp.append("appendRegion (");
+		tmp.append("yytext()");
 		tmp.append("); ");
 		tmp.append("}");
 		return tmp;
 	}
-
+	
 	/*
-	 * we have to build a line like :
-	 * [^]			{ $content.append(yytext()); }
+	 * we have to build a line with three parts like :
+     *   regexp { regionTemplate symbolTemplate }
 	 * 
-	 * where $ represent a unique name base on the terminal name with a dollar sign and the remaining text
+     *   regionTemplate==	Region r = endRegion({state}); // state != null
+     *   Template== 		Region r = endRegion(YYINITIAL); }
+     *   
+     *   symbolTemplate==	{empty} // if type is void (comment like)
+     *   symbolTemplate==	return symbolRegion (r, {terminal} )
 	 */
-	private StringBuilder writeRegionCollectRegExp(String regexp, String name) {
+	private StringBuilder writeRegionLeave(TerminalProduction terminal) {
 		StringBuilder tmp = new StringBuilder();
-		tmp.append("  [^]");
+		tmp.append("  ");
+		tmp.append(writeRegExpMatcher(terminal.getRegexp()));
 		tmp.append("\t\t");
 		tmp.append("{ ");
-		tmp.append("appendRegion (ETerminal.");
-		tmp.append(name);
-		tmp.append(", yytext()");
-		tmp.append("); ");
+		if (terminal.getCode() != null) {
+			tmp.append(terminal.getCode());
+		} else {
+			if (! "void".equals(terminal.getLhs().getType())) {
+				tmp.append("Region r = ");
+			}
+			tmp.append("endRegion (");
+			if (terminal.getEnterState() != null) {
+				tmp.append(terminal.getEnterState());
+				tmp.append("$State");
+			} else {
+				tmp.append("YYINITIAL");
+			}
+			tmp.append("); ");
+			if (! "void".equals(terminal.getLhs().getType())) {
+				tmp.append("return symbolRegion (r, ETerminal.");
+				tmp.append(terminal.getLhs().getName());
+				tmp.append("); ");
+			}
+		}
 		tmp.append("}");
 		return tmp;
 	}
-
-	private int count(String regexp, char c) {
-		int count = 0;
-		for (int i = 0; i < regexp.length(); i++) {			
-			if (regexp.charAt(i) == c) ++count;
+	
+	private StringBuilder writeTerminal(TerminalProduction terminal) {
+		switch (terminal.getSub()) {
+		case ENTER_STATE:	return writeRegionEnter (terminal);
+		case IN_STATE:		return writeRegionCollect (terminal);
+		case LEAVE_STATE:	return writeRegionLeave (terminal);
+		case SIMPLE:		return writeSimple (terminal);
+		default:			return null;
 		}
-		return count;
-	}
-
-	private int computeComplexity(String regexp) {
-		int starCount = count(regexp, '*');
-		int plusCount = count(regexp, '+');
-		int charCount = regexp.length();
-		return starCount*100+plusCount*50+charCount;
-	}
-
-	/*
-	 * first map is keyed by region name :
-	 *    for simple it will be YYINITIAL
-	 *    for region it will be the name of the region
-	 *    for fallback it will be empty string
-	 * second map is keyed by complexity of the production
-	 * list is all productions with the same complexity
-	 */
-	protected Map<ProductionKind, Map<Integer, List<TerminalProduction>>> sortAndOrderProductionByComplexity(Collection<? extends Production> original) {
-		Map<ProductionKind, Map<Integer, List<TerminalProduction>>> ordered = new TreeMap<>();
-		for (Production production : original) {
-			TerminalProduction terminal = null;
-			if (production instanceof TerminalProduction) terminal = (TerminalProduction) production;
-			if (terminal == null) continue;
-			int complexity = 0;
-			switch (production.getKind()) {
-			case TERMINAL_REGION:
-				complexity = computeComplexity (terminal.getFrom());
-				break;
-			case TERMINAL_SIMPLE:
-				complexity = computeComplexity (terminal.getRegexp());
-				break;
-			default:
-				break;
-			}
-			Map<Integer, List<TerminalProduction>> map = ordered.get(production.getKind());
-			if (map == null) {
-				map = new TreeMap<>();
-				ordered.put (production.getKind(), map);
-			}
-			List<TerminalProduction> list = map.get(complexity);
-			if (list == null) {
-				list = new ArrayList<>();
-				map.put (complexity, list);
-			}
-			list.add(terminal);
-		}
-		return ordered;
 	}
 
 	/**
 	 * 
-	 * first we sort all TerminalProductions by key/complexity
 	 * 
 	 */
 	private void emitRules() {
@@ -353,48 +341,100 @@ public class FlexWriter extends AbstractWriter {
 		for (RegExp regexp : grammar.getRegexps().values()) {
 			appendLine (writeSimpleRegExp(null, regexp.getName(), regexp.getRegexp(), null));
 		}
-		if (ordered.containsKey(ProductionKind.TERMINAL_SIMPLE)) {
-			for (List<TerminalProduction> terminals : ordered.get(ProductionKind.TERMINAL_SIMPLE).values()) {
+		for (Map.Entry<String, Map<Integer, List<TerminalProduction>>> entry : ordered.entrySet()) {
+			// only empty or YYINITIAL are kept
+			if (! entry.getKey().isEmpty() && ! "YYINITIAL".equals(entry.getKey())) continue;
+			for (List<TerminalProduction> terminals : entry.getValue().values()) {
 				for (TerminalProduction terminal : terminals) {
 					if ("macro".equals(terminal.getLhs().getType())) continue;
-					appendLine(writeSimpleRegExp (terminal.getLhs().getType(), terminal.getLhs().getName(), terminal.getRegexp(), terminal.getCode()));
-				}
-			}
-		}
-		if (ordered.containsKey(ProductionKind.TERMINAL_REGION)) {
-			for (List<TerminalProduction> terminals : ordered.get(ProductionKind.TERMINAL_REGION).values()) {
-				for (TerminalProduction terminal : terminals) {
-					if ("macro".equals(terminal.getLhs().getType())) continue;
-					appendLine(writeRegionStartRegExp (terminal.getFrom(), terminal.getRegion()));
+					appendLine(writeTerminal (terminal));
 				}
 			}
 		}
 		appendLine("}");
 		newLine();
-		if (ordered.containsKey(ProductionKind.TERMINAL_REGION)) {
-			for (List<TerminalProduction> terminals : ordered.get(ProductionKind.TERMINAL_REGION).values()) {
+		for (Map.Entry<String, Map<Integer, List<TerminalProduction>>> entry : ordered.entrySet()) {
+			// empty or YYINITIAL are skipped
+			if (entry.getKey().isEmpty() || "YYINITIAL".equals(entry.getKey())) continue;
+			StringBuilder tmp = new StringBuilder();
+			tmp.append("<");
+			tmp.append(entry.getKey());
+			tmp.append("$State");
+			tmp.append(">");
+			tmp.append(" {");
+			appendLine(tmp);
+			for (List<TerminalProduction> terminals : entry.getValue().values()) {
 				for (TerminalProduction terminal : terminals) {
-					StringBuilder tmp = new StringBuilder();
-					tmp.append("<");
-					tmp.append(terminal.getRegion());
-					tmp.append("$State");
-					tmp.append(">");
-					tmp.append(" {");
-					appendLine(tmp);
-					appendLine(writeRegionEndRegExp (terminal.getTo(), terminal.getRegion()));
-					appendLine(writeRegionCollectRegExp (null, terminal.getRegion()));
-					appendLine("}");
-					newLine();
+					appendLine (writeTerminal (terminal));
 				}
 			}
+			appendLine("}");
+			newLine();
 		}
 		newLine();
 		appendLine("[^]\t\t\t { fallback(); }");
 	}
 
+	private int count(String regexp, char c) {
+		if (regexp == null) return 0;
+		int count = 0;
+		for (int i = 0; i < regexp.length(); i++) {			
+			if (regexp.charAt(i) == c) ++count;
+		}
+		return count;
+	}
+
+	private int computeComplexity(TerminalKind sub, String regexp) {
+		int starCount = count(regexp, '*');
+		int plusCount = count(regexp, '+');
+		int macroCount = count(regexp, '{');
+		int charCount = regexp == null ? 3 : regexp.length();
+		int kindContribution = 0;
+		switch (sub) {
+		case ENTER_STATE:	kindContribution=30000; break;
+		case IN_STATE:		kindContribution=40000; break;
+		case LEAVE_STATE:	kindContribution=20000; break;
+		case SIMPLE:		kindContribution=10000; break;
+		}
+		return kindContribution+starCount*100+macroCount*75+plusCount*50+charCount;
+	}
+
+	/*
+	 * first map is keyed by region name :
+	 *    for simple it could be empty or YYINITIAL
+	 *    for region it will be the name of the region
+	 *    for fallback it will be empty string
+	 * second map is keyed by complexity of the production (terminalKind is encoded in)
+	 * list is all productions with the same complexity
+	 *
+	 */
+	protected Map<String, Map<Integer, List<TerminalProduction>>> sortAndOrderProductionByRegionKindAndComplexity(Collection<? extends Production> original) {
+		Map<String, Map<Integer, List<TerminalProduction>>> ordered = new TreeMap<>();
+		for (Production production : original) {
+			TerminalProduction terminal = null;
+			if (production instanceof TerminalProduction) terminal = (TerminalProduction) production;
+			if (terminal == null) continue;
+			String region = terminal.getRegion();
+			if (region == null) continue;
+			Map<Integer, List<TerminalProduction>> complexities = ordered.get(region);
+			if (complexities == null) {
+				complexities = new TreeMap<>();
+				ordered.put (region, complexities);
+			}
+			int complexity = computeComplexity (terminal.getSub(), terminal.getRegexp());				
+			List<TerminalProduction> list = complexities.get(complexity);
+			if (list == null) {
+				list = new ArrayList<>();
+				complexities.put (complexity, list);
+			}
+			list.add(terminal);
+		}
+		return ordered;
+	}
+
 	public void generate() {
 		if (! open()) return;
-		ordered = sortAndOrderProductionByComplexity (grammar.getProductions());
+		ordered = sortAndOrderProductionByRegionKindAndComplexity (grammar.getProductions());
 		emitImportCode ();
 		newLine();
 		appendLine("%%");

@@ -34,6 +34,7 @@ import fr.uha.hassenforder.jcupnflex.model.NonTerminal;
 import fr.uha.hassenforder.jcupnflex.model.Production;
 import fr.uha.hassenforder.jcupnflex.model.ProductionPart;
 import fr.uha.hassenforder.jcupnflex.model.RegExp;
+import fr.uha.hassenforder.jcupnflex.model.State;
 import fr.uha.hassenforder.jcupnflex.model.SymbolKind;
 import fr.uha.hassenforder.jcupnflex.model.Terminal;
 :}
@@ -122,6 +123,14 @@ parser action code {:
 		return sym;
 	}
     
+	private State getKnownState(com.github.jhoenicke.javacup.runtime.Symbol location, String id) {
+		State sym = getGrammar().getState(id);
+		if (sym == null) {
+			ErrorManager.getManager().emit_warning("State \"" + id + "\" has not been declared", location);
+		}
+		return sym;
+	}
+
 :}
 
 scanner import code {:
@@ -180,7 +189,7 @@ scanner code {:
 
 :}
 
-terminal String			PACKAGE, IMPORT, CODE, ACTION, PARSER, TERMINAL, NONTERMINAL, INIT, 
+terminal String			PACKAGE, IMPORT, CODE, ACTION, PARSER, TERMINAL, NONTERMINAL, STATE, INIT, 
 						SCANNER, WITH, START, PRECEDENCE, LEFT, RIGHT, NONASSOC, SUPER, EXTENDS, 
 						AFTER, REDUCE, OPTION, EXPECT;
 
@@ -188,6 +197,7 @@ terminal String			ID, CODE_STRING;
 
 terminal String			SYMBOL_TERMINAL;
 terminal String			SYMBOL_NONTERMINAL;
+terminal String			SYMBOL_STATE;
 
 terminal String			REGEXP;
 
@@ -201,8 +211,9 @@ nonterminal 				precedence_spec, precedence_list, precterminal_id, associativity
 nonterminal 				expect_spec;
 nonterminal 				start_spec;
 nonterminal 				production_spec;
-nonterminal					lhs_nonterminal, rhs_nt_list, rhs_nt;
-nonterminal					lhs_terminal, rhs_t_list, rhs_t;
+nonterminal					lhs_nonterminal, rhs_nonterminal_list, rhs_nonterminal;
+nonterminal					lhs_terminal, rhs_terminal_list, rhs_terminal;
+nonterminal					lhs_state, rhs_state_list, rhs_state;
 
 nonterminal ProductionPart	wild_symbol_id;
 
@@ -295,6 +306,7 @@ symbol_decl			::=	symbol_kind:kind symbol_type:type
 
 symbol_kind			::=	TERMINAL 							{: currentKind = SymbolKind.TERMINAL; :}
 					|	NONTERMINAL 						{: currentKind = SymbolKind.NONTERMINAL; :}
+					|	STATE								{: currentKind = SymbolKind.STATE; :}
 					;
 
 symbol_type			::=	type_id:id 		 					{: currentType = id.toString(); :}
@@ -368,8 +380,9 @@ start_spec			::=	START WITH symbol_id:name
 							:}
 					;
 
-production_spec		::=	lhs_nonterminal '::=' rhs_nt_list
-					|	lhs_terminal '::=' rhs_t_list
+production_spec		::=	lhs_nonterminal '::=' rhs_nonterminal_list
+					|	lhs_terminal '::=' rhs_terminal_list
+					|	lhs_state '::=' rhs_state_list
 					;
 
 lhs_nonterminal		::=	SYMBOL_NONTERMINAL:lhs_id {: updateLhs(getKnownNonTerminal(lhs_id$, lhs_id)); :} 
@@ -378,27 +391,69 @@ lhs_nonterminal		::=	SYMBOL_NONTERMINAL:lhs_id {: updateLhs(getKnownNonTerminal(
 lhs_terminal		::= SYMBOL_TERMINAL:lhs_id ( '|' SYMBOL_TERMINAL ) *	{: updateLhs(getKnownTerminal(lhs_id$, lhs_id)); :}
 					;
 
-rhs_nt_list			::=	rhs_nt ( '|' rhs_nt ) *
+lhs_state			::=	SYMBOL_STATE:lhs_id {: updateLhs(getKnownState(lhs_id$, lhs_id)); :} 
 					;
 
-rhs_nt				::=	prod_part*:rhs prod_precedence?:precedence 
+rhs_nonterminal_list::=	rhs_nonterminal ( '|' rhs_nonterminal ) *
+					;
+
+rhs_nonterminal		::=	prod_part*:rhs prod_precedence?:precedence 
 							{:
 								Production production = getFactory().createNonTerminalProduction(lhs, rhs, precedence);
 								getGrammar().addProduction(production);
 							:}
 					;
 
-rhs_t_list			::=	rhs_t ( '|' rhs_t ) *
+rhs_terminal_list		::=	rhs_terminal ( '|' rhs_terminal ) *
 					;
 
-rhs_t				::=	REGEXP:regexp CODE_STRING?:code
+rhs_terminal		::=	REGEXP:regexp CODE_STRING?:code
 							{:
-								Production production = getFactory().createTerminalProduction(lhs, regexp, code);
+								Production production = getFactory().createSimpleTerminalProduction(lhs, regexp, code);
 								getGrammar().addProduction(production);
 							:}
 					|	REGEXP:from '~' REGEXP:to CODE_STRING?:code
 							{:
-								Production production = getFactory().createTerminalProduction(lhs, from, to, code);
+								Production enter = getFactory().createEnterStateTerminalProduction(lhs, from, null);
+								getGrammar().addProduction(enter);
+								Production in = getFactory().createInStateTerminalProduction(lhs, null);
+								getGrammar().addProduction(in);
+								Production leave = getFactory().createLeaveStateTerminalProduction(lhs, to, code);
+								getGrammar().addProduction(leave);
+							:}
+					|	REGEXP:from '~' SYMBOL_STATE:state CODE_STRING?:code
+							{:
+								Production production = getFactory().createEnterStateTerminalProduction(lhs, from, state, code);
+								getGrammar().addProduction(production);
+							:}
+					|	SYMBOL_STATE:state REGEXP:regexp CODE_STRING?:code
+							{:
+								Production production = getFactory().createInStateTerminalProduction(lhs, state, regexp, code);
+								getGrammar().addProduction(production);
+							:}
+					|	SYMBOL_STATE:in '~' REGEXP:regexp CODE_STRING?:code
+							{:
+								Production production = getFactory().createLeaveStateTerminalProduction(lhs, in, regexp, code);
+								getGrammar().addProduction(production);
+							:}
+					|	SYMBOL_STATE:in '~' REGEXP:regexp SYMBOL_STATE:to CODE_STRING?:code
+							{:
+								Production production = getFactory().createEnterStateTerminalProduction(lhs, in, regexp, to, code);
+								getGrammar().addProduction(production);
+							:}
+					;
+
+rhs_state_list		::=	rhs_state ( '|' rhs_state ) *
+					;
+
+rhs_state			::=	REGEXP:from '~' REGEXP:to CODE_STRING?:code
+							{:
+								Production production = getFactory().createStateProduction(lhs, from, to, code);
+								getGrammar().addProduction(production);
+							:}
+					|	SYMBOL_STATE:in REGEXP:from '~' REGEXP:to CODE_STRING?:code
+							{:
+								Production production = getFactory().createStateProduction(lhs, in, from, to, code);
 								getGrammar().addProduction(production);
 							:}
 					;
@@ -453,6 +508,7 @@ wildcard			::=	'?'									{: RESULT = new StringBuilder("?"); :}
 symbol_id			::=	ID
 					|	SYMBOL_TERMINAL
 					|	SYMBOL_NONTERMINAL
+					|	SYMBOL_STATE
 					|	OPTION
 					|	SUPER
 					|	EXTENDS
@@ -472,6 +528,7 @@ symbol_id			::=	ID
 robust_id			::=	ID
 					|	SYMBOL_TERMINAL
 					|	SYMBOL_NONTERMINAL
+					|	SYMBOL_STATE
 					|	OPTION
 					|	CODE
 					|	ACTION

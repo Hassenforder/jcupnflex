@@ -17,4 +17,5 @@ public enum SymbolKind {
 	NONTERMINAL,
 	TERMINAL,
 	REGEXP,
+	STATE,
 }

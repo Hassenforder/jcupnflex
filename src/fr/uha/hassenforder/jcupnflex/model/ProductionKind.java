@@ -17,8 +17,8 @@ package fr.uha.hassenforder.jcupnflex.model;
 public enum ProductionKind {
 // Production
 	NONTERMINAL,
-	TERMINAL_SIMPLE,
-	TERMINAL_REGION,
+	TERMINAL,
+	STATE,
 
 // ProductionPart
 	LIST,

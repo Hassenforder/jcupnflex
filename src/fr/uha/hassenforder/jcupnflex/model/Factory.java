@@ -12,6 +12,7 @@ public class Factory implements IFactory {
 		case NONTERMINAL:	return new NonTerminal(name, type);
 		case TERMINAL:		return new Terminal(name, type);
 		case REGEXP:		return null;
+		case STATE:			return new State (name, type);
 		default:			return null;
 		}
 	}
@@ -36,15 +37,65 @@ public class Factory implements IFactory {
 		ProductionPart list = createListPart(rhs);
 		return new NonTerminalProduction((NonTerminal) lhs, list, (Terminal) precedence);
 	}
-
+	
 	@Override
-	public Production createTerminalProduction(GrammarSymbol lhs, String regexp, String code) {
-		return new TerminalProduction((Terminal) lhs, regexp, code);
+	public Production createSimpleTerminalProduction(GrammarSymbol lhs, String regexp, String code) {
+		Terminal terminal = (Terminal) lhs;
+		return new TerminalProduction(terminal, TerminalKind.SIMPLE, "", regexp, regexp, code);
 	}
 
 	@Override
-	public Production createTerminalProduction(GrammarSymbol lhs, String from, String to, String code) {
-		return new TerminalProduction((Terminal) lhs, from, to, code);
+	public Production createEnterStateTerminalProduction(GrammarSymbol lhs, String regexp, String code) {
+		Terminal terminal = (Terminal) lhs;
+		return new TerminalProduction(terminal, TerminalKind.ENTER_STATE, "", regexp, null, code);
+	}
+
+	@Override
+	public Production createEnterStateTerminalProduction(GrammarSymbol lhs, String regexp, String state, String code) {
+		Terminal terminal = (Terminal) lhs;
+		return new TerminalProduction(terminal, TerminalKind.ENTER_STATE, "", regexp, state, code);
+	}
+
+	@Override
+	public Production createEnterStateTerminalProduction(GrammarSymbol lhs, String inState, String regexp, String state, String code) {
+		Terminal terminal = (Terminal) lhs;
+		return new TerminalProduction(terminal, TerminalKind.ENTER_STATE, inState, regexp, state, code);
+	}
+
+	@Override
+	public Production createInStateTerminalProduction(GrammarSymbol lhs, String code) {
+		Terminal terminal = (Terminal) lhs;
+		return new TerminalProduction(terminal, TerminalKind.IN_STATE, lhs.getName(), null, null, code);
+	}
+
+	@Override
+	public Production createInStateTerminalProduction(GrammarSymbol lhs, String inState, String regexp, String code) {
+		Terminal terminal = (Terminal) lhs;
+		return new TerminalProduction(terminal, TerminalKind.IN_STATE, inState, regexp, null, code);
+	}
+
+	@Override
+	public Production createLeaveStateTerminalProduction(GrammarSymbol lhs, String regexp, String code) {
+		Terminal terminal = (Terminal) lhs;
+		return new TerminalProduction(terminal, TerminalKind.LEAVE_STATE, lhs.getName(), regexp, null, code);
+	}
+	
+	@Override
+	public Production createLeaveStateTerminalProduction(GrammarSymbol lhs, String inState, String regexp, String code) {
+		Terminal terminal = (Terminal) lhs;
+		return new TerminalProduction(terminal, TerminalKind.LEAVE_STATE, inState, regexp, null, code);
+	}
+
+	@Override
+	public Production createStateProduction(GrammarSymbol lhs, String from, String to, String code) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Production createStateProduction(GrammarSymbol lhs, String in, String from, String to, String code) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override

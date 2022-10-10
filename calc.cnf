@@ -75,7 +75,9 @@ expr	::=	expr:e1	'+'	expr:e2		{: RESULT = e1 + e2; :}
 		|	ID:n					{: RESULT = parser.getValue(n); :}
 		;
 
-terminal void SUPPRESS;
+terminal void SUPPRESS, CODE_STRING;
+
+CODE_STRING			::=	"/*" ~ "*/";
 
 SUPPRESS::=	`[ \t\f]`				{: :}
 		;
