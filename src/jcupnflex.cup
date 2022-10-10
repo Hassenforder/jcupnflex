@@ -400,13 +400,17 @@ rhs_state_list		::=	rhs_state ( BAR rhs_state ) *
 
 rhs_state			::=	REGEXP:from TILDA REGEXP:to CODE_STRING?:code
 							{:
-								Production production = getFactory().createStateProduction(lhs, from, to, code);
-								getGrammar().addProduction(production);
+								Production enter = getFactory().createEnterStateStateProduction(lhs, from, null);
+								getGrammar().addProduction(enter);
+								Production leave = getFactory().createLeaveStateStateProduction(lhs, to, code);
+								getGrammar().addProduction(leave);
 							:}
 					|	SYMBOL_STATE:in REGEXP:from TILDA REGEXP:to CODE_STRING?:code
 							{:
-								Production production = getFactory().createStateProduction(lhs, in, from, to, code);
-								getGrammar().addProduction(production);
+								Production enter = getFactory().createEnterStateStateProduction(lhs, in, from, null);
+								getGrammar().addProduction(enter);
+								Production leave = getFactory().createLeaveStateStateProduction(lhs, to, code);
+								getGrammar().addProduction(leave);
 							:}
 					;
 

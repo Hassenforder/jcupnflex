@@ -41,61 +41,68 @@ public class Factory implements IFactory {
 	@Override
 	public Production createSimpleTerminalProduction(GrammarSymbol lhs, String regexp, String code) {
 		Terminal terminal = (Terminal) lhs;
-		return new TerminalProduction(terminal, TerminalKind.SIMPLE, "", regexp, regexp, code);
+		return new TerminalProduction(terminal, LexicalKind.SIMPLE, "", regexp, regexp, code);
 	}
 
 	@Override
 	public Production createEnterStateTerminalProduction(GrammarSymbol lhs, String regexp, String code) {
 		Terminal terminal = (Terminal) lhs;
-		return new TerminalProduction(terminal, TerminalKind.ENTER_STATE, "", regexp, null, code);
+		return new TerminalProduction(terminal, LexicalKind.ENTER_STATE, "", regexp, null, code);
 	}
 
 	@Override
 	public Production createEnterStateTerminalProduction(GrammarSymbol lhs, String regexp, String state, String code) {
 		Terminal terminal = (Terminal) lhs;
-		return new TerminalProduction(terminal, TerminalKind.ENTER_STATE, "", regexp, state, code);
+		return new TerminalProduction(terminal, LexicalKind.ENTER_STATE, "", regexp, state, code);
 	}
 
 	@Override
 	public Production createEnterStateTerminalProduction(GrammarSymbol lhs, String inState, String regexp, String state, String code) {
 		Terminal terminal = (Terminal) lhs;
-		return new TerminalProduction(terminal, TerminalKind.ENTER_STATE, inState, regexp, state, code);
+		return new TerminalProduction(terminal, LexicalKind.ENTER_STATE, inState, regexp, state, code);
 	}
 
 	@Override
 	public Production createInStateTerminalProduction(GrammarSymbol lhs, String code) {
 		Terminal terminal = (Terminal) lhs;
-		return new TerminalProduction(terminal, TerminalKind.IN_STATE, lhs.getName(), null, null, code);
+		return new TerminalProduction(terminal, LexicalKind.IN_STATE, lhs.getName(), null, null, code);
 	}
 
 	@Override
 	public Production createInStateTerminalProduction(GrammarSymbol lhs, String inState, String regexp, String code) {
 		Terminal terminal = (Terminal) lhs;
-		return new TerminalProduction(terminal, TerminalKind.IN_STATE, inState, regexp, null, code);
+		return new TerminalProduction(terminal, LexicalKind.IN_STATE, inState, regexp, null, code);
 	}
 
 	@Override
 	public Production createLeaveStateTerminalProduction(GrammarSymbol lhs, String regexp, String code) {
 		Terminal terminal = (Terminal) lhs;
-		return new TerminalProduction(terminal, TerminalKind.LEAVE_STATE, lhs.getName(), regexp, null, code);
+		return new TerminalProduction(terminal, LexicalKind.LEAVE_STATE, lhs.getName(), regexp, null, code);
 	}
 	
 	@Override
 	public Production createLeaveStateTerminalProduction(GrammarSymbol lhs, String inState, String regexp, String code) {
 		Terminal terminal = (Terminal) lhs;
-		return new TerminalProduction(terminal, TerminalKind.LEAVE_STATE, inState, regexp, null, code);
+		return new TerminalProduction(terminal, LexicalKind.LEAVE_STATE, inState, regexp, null, code);
+	}
+
+	
+	@Override
+	public Production createEnterStateStateProduction(GrammarSymbol lhs, String regexp, String code) {
+		State state = (State) lhs;
+		return new StateProduction(state, LexicalKind.ENTER_STATE, "", regexp, null, code);
 	}
 
 	@Override
-	public Production createStateProduction(GrammarSymbol lhs, String from, String to, String code) {
-		// TODO Auto-generated method stub
-		return null;
+	public Production createEnterStateStateProduction(GrammarSymbol lhs, String in, String regexp, String code) {
+		State state = (State) lhs;
+		return new StateProduction(state, LexicalKind.ENTER_STATE, in, regexp, null, code);
 	}
 
 	@Override
-	public Production createStateProduction(GrammarSymbol lhs, String in, String from, String to, String code) {
-		// TODO Auto-generated method stub
-		return null;
+	public Production createLeaveStateStateProduction(GrammarSymbol lhs, String regexp, String code) {
+		State state = (State) lhs;
+		return new StateProduction(state, LexicalKind.LEAVE_STATE, lhs.getName(), regexp, null, code);
 	}
 
 	@Override

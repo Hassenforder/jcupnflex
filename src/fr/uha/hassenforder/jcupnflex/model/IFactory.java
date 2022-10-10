@@ -22,8 +22,9 @@ public interface IFactory {
 	public Production createLeaveStateTerminalProduction(GrammarSymbol lhs, String inState, String regexp, String code);
 
 	// all kind of State Productions
-	public Production createStateProduction(GrammarSymbol lhs, String from, String to, String code);
-	public Production createStateProduction(GrammarSymbol lhs, String in, String from, String to, String code);
+	public Production createEnterStateStateProduction(GrammarSymbol lhs, String from, String code);
+	public Production createEnterStateStateProduction(GrammarSymbol lhs, String in, String from, String code);
+	public Production createLeaveStateStateProduction(GrammarSymbol lhs, String to, String code);
 
 	// all kind of Nonterminal Parts
 	ProductionPart createSimplePart (ProductionPart child, String label);

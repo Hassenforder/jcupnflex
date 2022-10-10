@@ -8,7 +8,7 @@ package fr.uha.hassenforder.jcupnflex.model;
  * @author Michel Hassenforder
  */
 
-public enum TerminalKind {
+public enum LexicalKind {
 	SIMPLE,
 	ENTER_STATE,
 	IN_STATE,

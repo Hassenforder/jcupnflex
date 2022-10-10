@@ -12,18 +12,18 @@ import fr.uha.hassenforder.jcupnflex.model.DirectiveSet;
 import fr.uha.hassenforder.jcupnflex.model.Grammar;
 import fr.uha.hassenforder.jcupnflex.model.Production;
 import fr.uha.hassenforder.jcupnflex.model.RegExp;
-import fr.uha.hassenforder.jcupnflex.model.TerminalKind;
-import fr.uha.hassenforder.jcupnflex.model.TerminalProduction;
+import fr.uha.hassenforder.jcupnflex.model.LexicalKind;
+import fr.uha.hassenforder.jcupnflex.model.LexicalProduction;
 
 public class FlexWriter extends AbstractWriter {
 
 	/*
-	 * sort TerminalProduction by two criterion
+	 * sort LexicalProduction by two criterion
 	 *   name of the region to be able to create/manage region
 	 *   complexity of the rule for ordering them 
 	 *   
 	 */
-	private Map<String, Map<Integer, List<TerminalProduction>>> ordered;
+	private Map<String, Map<Integer, List<LexicalProduction>>> ordered;
 
 	public FlexWriter(Grammar grammar, DirectiveSet directives, File outputFile) {
 		super(grammar, directives, outputFile);
@@ -63,7 +63,7 @@ public class FlexWriter extends AbstractWriter {
 		appendLine(writeCode (code));
 		// if we have at least a key not empty or YYINITIAL (it is a region)
 		boolean mustEmit = false;
-		for (Map.Entry<String, Map<Integer, List<TerminalProduction>>> entry : ordered.entrySet()) {
+		for (Map.Entry<String, Map<Integer, List<LexicalProduction>>> entry : ordered.entrySet()) {
 			if (entry.getKey().isEmpty() || "YYINITIAL".equals(entry.getKey())) continue;
 			mustEmit = true;
 		}
@@ -146,8 +146,8 @@ public class FlexWriter extends AbstractWriter {
 
 	private void emitMacros() {
 		if (! ordered.containsKey("")) return;
-		for (List<TerminalProduction> terminals : ordered.get("").values()) {
-			for (TerminalProduction terminal : terminals) {
+		for (List<LexicalProduction> terminals : ordered.get("").values()) {
+			for (LexicalProduction terminal : terminals) {
 				// reserved type for macro regexp
 				if (! "macro".equals(terminal.getLhs().getType())) continue;
 				appendLine(writeMacro (terminal.getLhs().getName(), terminal.getRegexp()));
@@ -156,7 +156,7 @@ public class FlexWriter extends AbstractWriter {
 	}
 
 	private void emitStates() {
-		for (Map.Entry<String, Map<Integer, List<TerminalProduction>>> entry : ordered.entrySet()) {
+		for (Map.Entry<String, Map<Integer, List<LexicalProduction>>> entry : ordered.entrySet()) {
 			if (entry.getKey().isEmpty() || "YYINITIAL".equals(entry.getKey())) continue;
 			StringBuilder content = new StringBuilder ();
 			content.append("%state ");
@@ -226,7 +226,7 @@ public class FlexWriter extends AbstractWriter {
 		return tmp;
 	}
 
-	private StringBuilder writeSimple(TerminalProduction terminal) {
+	private StringBuilder writeSimple(LexicalProduction terminal) {
 		return writeSimpleRegExp(terminal.getLhs().getType(), terminal.getLhs().getName(), terminal.getRegexp(), terminal.getCode());
 	}
 	
@@ -236,7 +236,7 @@ public class FlexWriter extends AbstractWriter {
 	 * regexp 	{ startRegion({name}$State); }
 	 * 
 	 */
-	private StringBuilder writeRegionEnter(TerminalProduction terminal) {
+	private StringBuilder writeRegionEnter(LexicalProduction terminal) {
 		StringBuilder tmp = new StringBuilder();
 		tmp.append("  ");
 		tmp.append(writeRegExpMatcher(terminal.getRegexp()));
@@ -265,7 +265,7 @@ public class FlexWriter extends AbstractWriter {
 	 * 
 	 * where $ represent a unique name base on the terminal name with a dollar sign and the remaining text
 	 */
-	private StringBuilder writeRegionCollect(TerminalProduction terminal) {
+	private StringBuilder writeRegionCollect(LexicalProduction terminal) {
 		StringBuilder tmp = new StringBuilder();
 		tmp.append("  ");
 		if (terminal.getRegexp() != null) {
@@ -292,7 +292,7 @@ public class FlexWriter extends AbstractWriter {
      *   symbolTemplate==	{empty} // if type is void (comment like)
      *   symbolTemplate==	return symbolRegion (r, {terminal} )
 	 */
-	private StringBuilder writeRegionLeave(TerminalProduction terminal) {
+	private StringBuilder writeRegionLeave(LexicalProduction terminal) {
 		StringBuilder tmp = new StringBuilder();
 		tmp.append("  ");
 		tmp.append(writeRegExpMatcher(terminal.getRegexp()));
@@ -322,7 +322,7 @@ public class FlexWriter extends AbstractWriter {
 		return tmp;
 	}
 	
-	private StringBuilder writeTerminal(TerminalProduction terminal) {
+	private StringBuilder writeTerminal(LexicalProduction terminal) {
 		switch (terminal.getSub()) {
 		case ENTER_STATE:	return writeRegionEnter (terminal);
 		case IN_STATE:		return writeRegionCollect (terminal);
@@ -341,11 +341,11 @@ public class FlexWriter extends AbstractWriter {
 		for (RegExp regexp : grammar.getRegexps().values()) {
 			appendLine (writeSimpleRegExp(null, regexp.getName(), regexp.getRegexp(), null));
 		}
-		for (Map.Entry<String, Map<Integer, List<TerminalProduction>>> entry : ordered.entrySet()) {
+		for (Map.Entry<String, Map<Integer, List<LexicalProduction>>> entry : ordered.entrySet()) {
 			// only empty or YYINITIAL are kept
 			if (! entry.getKey().isEmpty() && ! "YYINITIAL".equals(entry.getKey())) continue;
-			for (List<TerminalProduction> terminals : entry.getValue().values()) {
-				for (TerminalProduction terminal : terminals) {
+			for (List<LexicalProduction> terminals : entry.getValue().values()) {
+				for (LexicalProduction terminal : terminals) {
 					if ("macro".equals(terminal.getLhs().getType())) continue;
 					appendLine(writeTerminal (terminal));
 				}
@@ -353,7 +353,7 @@ public class FlexWriter extends AbstractWriter {
 		}
 		appendLine("}");
 		newLine();
-		for (Map.Entry<String, Map<Integer, List<TerminalProduction>>> entry : ordered.entrySet()) {
+		for (Map.Entry<String, Map<Integer, List<LexicalProduction>>> entry : ordered.entrySet()) {
 			// empty or YYINITIAL are skipped
 			if (entry.getKey().isEmpty() || "YYINITIAL".equals(entry.getKey())) continue;
 			StringBuilder tmp = new StringBuilder();
@@ -363,8 +363,8 @@ public class FlexWriter extends AbstractWriter {
 			tmp.append(">");
 			tmp.append(" {");
 			appendLine(tmp);
-			for (List<TerminalProduction> terminals : entry.getValue().values()) {
-				for (TerminalProduction terminal : terminals) {
+			for (List<LexicalProduction> terminals : entry.getValue().values()) {
+				for (LexicalProduction terminal : terminals) {
 					appendLine (writeTerminal (terminal));
 				}
 			}
@@ -384,7 +384,7 @@ public class FlexWriter extends AbstractWriter {
 		return count;
 	}
 
-	private int computeComplexity(TerminalKind sub, String regexp) {
+	private int computeComplexity(LexicalKind sub, String regexp) {
 		int starCount = count(regexp, '*');
 		int plusCount = count(regexp, '+');
 		int macroCount = count(regexp, '{');
@@ -408,21 +408,21 @@ public class FlexWriter extends AbstractWriter {
 	 * list is all productions with the same complexity
 	 *
 	 */
-	protected Map<String, Map<Integer, List<TerminalProduction>>> sortAndOrderProductionByRegionKindAndComplexity(Collection<? extends Production> original) {
-		Map<String, Map<Integer, List<TerminalProduction>>> ordered = new TreeMap<>();
+	protected Map<String, Map<Integer, List<LexicalProduction>>> sortAndOrderProductionByRegionKindAndComplexity(Collection<? extends Production> original) {
+		Map<String, Map<Integer, List<LexicalProduction>>> ordered = new TreeMap<>();
 		for (Production production : original) {
-			TerminalProduction terminal = null;
-			if (production instanceof TerminalProduction) terminal = (TerminalProduction) production;
+			LexicalProduction terminal = null;
+			if (production instanceof LexicalProduction) terminal = (LexicalProduction) production;
 			if (terminal == null) continue;
 			String region = terminal.getRegion();
 			if (region == null) continue;
-			Map<Integer, List<TerminalProduction>> complexities = ordered.get(region);
+			Map<Integer, List<LexicalProduction>> complexities = ordered.get(region);
 			if (complexities == null) {
 				complexities = new TreeMap<>();
 				ordered.put (region, complexities);
 			}
 			int complexity = computeComplexity (terminal.getSub(), terminal.getRegexp());				
-			List<TerminalProduction> list = complexities.get(complexity);
+			List<LexicalProduction> list = complexities.get(complexity);
 			if (list == null) {
 				list = new ArrayList<>();
 				complexities.put (complexity, list);
