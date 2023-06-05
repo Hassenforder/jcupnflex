@@ -24,6 +24,7 @@ public class Grammar {
 	private Map<String, Terminal> terminals;
 	private Map<String, RegExp> regexps;
 	private Map<String, NonTerminal> nonTerminals;
+	private Map<String, State> states;
 	private List<Production> productions;
 
 	private NonTerminal startSymbol;
@@ -32,6 +33,8 @@ public class Grammar {
 		this.factory = factory;
 		Terminal error = new Terminal("error");
 		getTerminals().put(error.getName(), error);
+		Terminal eof = new Terminal("EOF");
+		getTerminals().put(eof.getName(), eof);
 	}
 
 	public Map<String, Terminal> getTerminals() {
@@ -47,6 +50,11 @@ public class Grammar {
 	public Map<String, NonTerminal> getNonTerminals() {
 		if (nonTerminals == null) nonTerminals = new TreeMap<>();
 		return nonTerminals;
+	}
+
+	public Map<String, State> getStates() {
+		if (states == null) states = new TreeMap<>();
+		return states;
 	}
 
 	public List<Production> getProductions() {
@@ -81,6 +89,10 @@ public class Grammar {
 		return getRegexps().get(name);
 	}
 
+	public State getState(String name) {
+		return getStates().get(name);
+	}
+
 	public RegExp getOrAddRegexp (String content) {
 		if (getRegexps().containsKey(content)) return getRegexps().get(content);
 		GrammarSymbol symbol = factory.createRegexp(content);
@@ -105,6 +117,10 @@ public class Grammar {
 			RegExp regExp = (RegExp) symbol;
 			getTerminals().put(regExp.getName(), regExp);
 			getRegexps().put(regExp.getRegexp(), regExp);
+			break;
+		case STATE		:
+			State state = (State) symbol;
+			getStates().put(state.getName(), state);
 			break;
 		}
 	}

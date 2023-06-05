@@ -1,4 +1,5 @@
 import fr.uha.hassenforder.jcupnflex.ErrorManager;
+import fr.uha.hassenforder.jcupnflex.model.Grammar;
 %%
 
 %package fr.uha.hassenforder.jcupnflex.reader
@@ -6,15 +7,22 @@ import fr.uha.hassenforder.jcupnflex.ErrorManager;
 %public
 %cupJHMH
 %{
+	private Grammar grammar;
+	
+	public void setGrammar (Grammar grammar) {
+	   this.grammar = grammar;
+	}
+
 	// helpers to manage the whole code segment
 	private StringBuilder cs;
     private int csline, cscolumn;
 
+	// a simple function to remove the double quotes
 	@SuppressWarnings("unused")
 	private String regexpCleaner (char toEscape) {
 		StringBuilder tmp = new StringBuilder ();
-		int current = zzStartRead+1;
-		while (current < zzMarkedPos-1) {
+		int current = zzStartRead;
+		while (current < zzMarkedPos) {
 			tmp.append(zzBuffer[current]);
 			if (zzBuffer[current] == toEscape && zzBuffer[current+1] == toEscape) {
 				++current;
@@ -41,6 +49,13 @@ import fr.uha.hassenforder.jcupnflex.ErrorManager;
 		ErrorManager.getManager().emit_error("Scanner at " + (yyline+1) + "(" + (yycolumn+1) +  "): " + message);
     }
     
+    private ETerminal getToken (String name) {
+		if (grammar.getTerminal(name) != null) return ETerminal.SYMBOL_TERMINAL;
+		if (grammar.getNonTerminal(name) != null) return ETerminal.SYMBOL_NONTERMINAL;
+		if (grammar.getState(name) != null) return ETerminal.SYMBOL_STATE;
+		return ETerminal.ID;
+	}
+
 %}
 
 Newline = \r | \n | \r\n
@@ -63,6 +78,7 @@ ident = ([:jletter:] | "_" ) ([:jletterdigit:] | [:jletter:] | "_" )*
 
   {Whitespace}  { }
   {Comment}     { }
+  "~"           { return symbol(ETerminal.TILDA); }
   "?"           { return symbol(ETerminal.QUESTION); }
   ";"           { return symbol(ETerminal.SEMICOLON); }
   ","           { return symbol(ETerminal.COMMA); }
@@ -89,8 +105,9 @@ ident = ([:jletter:] | "_" ) ([:jletterdigit:] | [:jletter:] | "_" )*
   "parser"      { return symbol(ETerminal.PARSER, yytext()); }
   "terminal"    { return symbol(ETerminal.TERMINAL, yytext()); }
   "nonterminal" { return symbol(ETerminal.NONTERMINAL, yytext()); }
+  "state"	    { return symbol(ETerminal.STATE, yytext()); }
   "init"        { return symbol(ETerminal.INIT, yytext()); }
-  "scan"        { return symbol(ETerminal.SCAN, yytext()); }
+  "scanner"     { return symbol(ETerminal.SCANNER, yytext()); }
   "with"        { return symbol(ETerminal.WITH, yytext()); }
   "start"       { return symbol(ETerminal.START, yytext()); }
   "expect"      { return symbol(ETerminal.EXPECT, yytext()); }
@@ -102,7 +119,7 @@ ident = ([:jletter:] | "_" ) ([:jletterdigit:] | [:jletter:] | "_" )*
   "super"       { return symbol(ETerminal.SUPER, yytext()); }
   "after"       { return symbol(ETerminal.AFTER, yytext()); }
   "reduce"      { return symbol(ETerminal.REDUCE, yytext()); }
-  {ident}       { return symbol(ETerminal.ID, yytext()); }
+  {ident}       { return symbol(getToken(yytext()), yytext()); }
   
   `([^`]|``)*`	{ return symbol(ETerminal.REGEXP, regexpCleaner('`')); }
   '([^']|'')*'	{ return symbol(ETerminal.REGEXP, regexpCleaner('\'')); }

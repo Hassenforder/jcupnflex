@@ -18,7 +18,6 @@ public class NonTerminal extends GrammarSymbol {
 	 * 
 	 * @param name the name of the non terminal.
 	 * @param type the type string for the non terminal.
-	 * @param index the index for the non terminal.
 	 */
 	public NonTerminal(String name, String type) {
 		super(SymbolKind.NONTERMINAL, name, type);
@@ -28,7 +27,6 @@ public class NonTerminal extends GrammarSymbol {
 	 * Constructor for typeless nonterminal.
 	 * 
 	 * @param name the name of the non terminal.
-	 * @param index the index for the non terminal.
 	 */
 	public NonTerminal(String name) {
 		this(name, null);

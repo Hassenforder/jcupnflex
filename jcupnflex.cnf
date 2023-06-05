@@ -1,28 +1,28 @@
 /* 
   JCup Specifications for the JCupNFlex Language
-  by Michel Hassenforder, Universitï¿½ de Haute Alsace
+  by Michel Hassenforder, Université de Haute Alsace
   28 September 2022
 
   This JavaCup specification is used to implement JCupNFlex itself.
   It specifies the parser for the JCupNFlex specification language.
 
   The rules are rooted in the JCup language
-  Productions now can be NonTerminalProduction as usual but also TerminalProduction
-  TerminalProduction includes sevedral rules
-  + just one regexp for simple Terminal
-  + a begin to end couple of regexp where all character insided begin and end are captured in a String
-  + additional rules for State sensitive regexp rules
-    
+  The regexp rules for the Jcup Terminals are not defined as they are
+  defined in a companion files processed by JFlex.
+  Here the JFlex rules are still ion this file to combine all parts 
+  of a getGrammar().
+  
   Author(s)
-	Michel Hassenforder, ENSISA, Universitï¿½ de Haute Alsace
+	Michel Hassenforder, ENSISA, Université de Haute Alsace
 	michel.hassenforder@uha.fr
 	
   Revisions
     v1.0	First released version
 */
 
-package fr.uha.hassenforder.jcupnflex.reader;
+package reader;
 
+parser import code {:
 import fr.uha.hassenforder.jcupnflex.ErrorManager;
 import fr.uha.hassenforder.jcupnflex.model.Associativity;
 import fr.uha.hassenforder.jcupnflex.model.Directive;
@@ -37,6 +37,7 @@ import fr.uha.hassenforder.jcupnflex.model.RegExp;
 import fr.uha.hassenforder.jcupnflex.model.State;
 import fr.uha.hassenforder.jcupnflex.model.SymbolKind;
 import fr.uha.hassenforder.jcupnflex.model.Terminal;
+:}
 
 parser code {:
 
@@ -59,7 +60,7 @@ parser code {:
     
 :}
 
-action code {:
+parser action code {:
 
     private Grammar getGrammar() {
         return parser.grammar;
@@ -129,17 +130,64 @@ action code {:
 		}
 		return sym;
 	}
-  
-:};
 
-// Grammar lexic
-terminal				SEMICOLON, COMMA, COLON, COLON_COLON_EQUALS, BAR, PERCENT_PREC;
-// Directive lexic
-terminal				DOT, LBRACK, RBRACK, GT, LT;
-// EBNF operators
-terminal				STAR, PLUS, QUESTION, EQUALS, LPARENT, RPARENT;
-// REGEXP with region description from ~ to
-terminal				TILDA;
+:}
+
+scanner import code {:
+import fr.uha.hassenforder.jcupnflex.ErrorManager;
+import fr.uha.hassenforder.jcupnflex.model.Grammar;
+:}
+
+scanner code {:
+	private Grammar grammar;
+	
+	public void setGrammar (Grammar grammar) {
+	   this.grammar = grammar;
+	}
+	
+	// a simple function to remove the double quotes
+	@SuppressWarnings("unused")
+	private String regexpCleaner (char toEscape) {
+		StringBuilder tmp = new StringBuilder ();
+		int current = zzStartRead;
+		while (current < zzMarkedPos) {
+			tmp.append(zzBuffer[current]);
+			if (zzBuffer[current] == toEscape && zzBuffer[current+1] == toEscape) {
+				++current;
+			}
+			++current;
+		}
+		return tmp.toString();
+	}
+		
+	@SuppressWarnings("unused")
+    private Symbol symbol(ETerminal symbol, int fromLine, int fromColumn, int toLine, int toColumn, Object lexem)		{
+       AdvancedSymbolFactory.Location left = new AdvancedSymbolFactory.Location (fromLine, fromColumn);
+       AdvancedSymbolFactory.Location right = new AdvancedSymbolFactory.Location (toLine, toColumn);
+       return symbolFactory.newSymbol(symbol, left, right, lexem);
+    }
+
+	@SuppressWarnings("unused")
+    private void emit_warning(String message){
+		ErrorManager.getManager().emit_warning("Scanner at " + (yyline+1) + "(" + (yycolumn+1) + "): " + message);
+    }
+
+	@SuppressWarnings("unused")
+    private void emit_error(String message){
+		ErrorManager.getManager().emit_error("Scanner at " + (yyline+1) + "(" + (yycolumn+1) +  "): " + message);
+    }
+    
+    private ETerminal getToken (String name) {
+		if (grammar.getTerminal(name) != null) return ETerminal.SYMBOL_TERMINAL;
+		if (grammar.getNonTerminal(name) != null) return ETerminal.SYMBOL_NONTERMINAL;
+		return ETerminal.ID;
+	}
+
+    private void fallback () {
+		emit_warning("Unrecognized character '"+yytext()+"' -- ignored");
+	}    
+
+:}
 
 terminal String			PACKAGE, IMPORT, CODE, ACTION, PARSER, TERMINAL, NONTERMINAL, STATE, INIT, 
 						SCANNER, WITH, START, PRECEDENCE, LEFT, RIGHT, NONASSOC, SUPER, EXTENDS, 
@@ -184,16 +232,16 @@ start with grammar;
 grammar				::=	( spec ) *
 					;
 
-spec				::=	package_spec SEMICOLON
-				    |	option_spec SEMICOLON
-			    	|	parser_spec SEMICOLON
+spec				::=	package_spec ';'
+				    |	option_spec ';'
+			    	|	parser_spec ';'
 				    |	custom_code_spec
-					|	symbol_spec SEMICOLON
-					|	precedence_spec SEMICOLON
-					|	expect_spec SEMICOLON
-					|	start_spec SEMICOLON
-					|	production_spec SEMICOLON
-					|	error SEMICOLON
+					|	symbol_spec ';'
+					|	precedence_spec ';'
+					|	expect_spec ';'
+					|	start_spec ';'
+					|	production_spec ';'
+					|	error ';'
 					;
 
 package_spec		::=	PACKAGE	multipart_id:id
@@ -215,7 +263,7 @@ parser_spec			::=	PARSER multipart_id:name
 option_spec			::= OPTION option_list
 					;
 
-option_list			::=	option_ ( COMMA option_ ) *
+option_list			::=	option_ ( ',' option_ ) *
 					;
 
 option_				::=	robust_id:opt
@@ -224,7 +272,7 @@ option_				::=	robust_id:opt
 									ErrorManager.getManager().emit_warning("Redundant option " + opt + " (skipping)");
 								}
 							:}
-					|	robust_id:opt EQUALS robust_id:val
+					|	robust_id:opt '=' robust_id:val
 							{:
 								if ( ! getDirectives().addDirective(Directive.OPTION, opt, val)) {
 									ErrorManager.getManager().emit_warning("Redundant option " + opt + " = " + val + " (skipping)");
@@ -264,7 +312,7 @@ symbol_kind			::=	TERMINAL 							{: currentKind = SymbolKind.TERMINAL; :}
 symbol_type			::=	type_id:id 		 					{: currentType = id.toString(); :}
 					;
 
-symbol_list			::=	new_symbol_id ( COMMA new_symbol_id ) *
+symbol_list			::=	new_symbol_id ( ',' new_symbol_id ) *
 					;
 
 new_symbol_id		::=	symbol_id:sym_id
@@ -290,7 +338,7 @@ associativity_decl	::= LEFT								{: updatePrecedence(Associativity.LEFT); :}
 					|	NONASSOC							{: updatePrecedence(Associativity.NONE); :}
 					;
       
-precedence_list		::= precterminal_id ( COMMA precterminal_id )*
+precedence_list		::= precterminal_id ( ',' precterminal_id )*
 					;
 
 precterminal_id		::= symbol_id:name
@@ -332,21 +380,21 @@ start_spec			::=	START WITH symbol_id:name
 							:}
 					;
 
-production_spec		::=	lhs_nonterminal COLON_COLON_EQUALS rhs_nonterminal_list
-					|	lhs_terminal COLON_COLON_EQUALS rhs_terminal_list
-					|	lhs_state COLON_COLON_EQUALS rhs_state_list
+production_spec		::=	lhs_nonterminal '::=' rhs_nonterminal_list
+					|	lhs_terminal '::=' rhs_terminal_list
+					|	lhs_state '::=' rhs_state_list
 					;
 
 lhs_nonterminal		::=	SYMBOL_NONTERMINAL:lhs_id {: updateLhs(getKnownNonTerminal(lhs_id$, lhs_id)); :} 
 					;
 
-lhs_terminal		::= SYMBOL_TERMINAL:lhs_id ( BAR SYMBOL_TERMINAL ) *	{: updateLhs(getKnownTerminal(lhs_id$, lhs_id)); :}
+lhs_terminal		::= SYMBOL_TERMINAL:lhs_id ( '|' SYMBOL_TERMINAL ) *	{: updateLhs(getKnownTerminal(lhs_id$, lhs_id)); :}
 					;
 
 lhs_state			::=	SYMBOL_STATE:lhs_id {: updateLhs(getKnownState(lhs_id$, lhs_id)); :} 
 					;
 
-rhs_nonterminal_list::=	rhs_nonterminal ( BAR rhs_nonterminal ) *
+rhs_nonterminal_list::=	rhs_nonterminal ( '|' rhs_nonterminal ) *
 					;
 
 rhs_nonterminal		::=	prod_part*:rhs prod_precedence?:precedence 
@@ -356,7 +404,7 @@ rhs_nonterminal		::=	prod_part*:rhs prod_precedence?:precedence
 							:}
 					;
 
-rhs_terminal_list		::=	rhs_terminal ( BAR rhs_terminal ) *
+rhs_terminal_list		::=	rhs_terminal ( '|' rhs_terminal ) *
 					;
 
 rhs_terminal		::=	REGEXP:regexp CODE_STRING?:code
@@ -364,7 +412,7 @@ rhs_terminal		::=	REGEXP:regexp CODE_STRING?:code
 								Production production = getFactory().createSimpleTerminalProduction(lhs, regexp, code);
 								getGrammar().addProduction(production);
 							:}
-					|	REGEXP:from TILDA REGEXP:to CODE_STRING?:code
+					|	REGEXP:from '~' REGEXP:to CODE_STRING?:code
 							{:
 								Production enter = getFactory().createEnterStateTerminalProduction(lhs, from, null);
 								getGrammar().addProduction(enter);
@@ -373,7 +421,7 @@ rhs_terminal		::=	REGEXP:regexp CODE_STRING?:code
 								Production leave = getFactory().createLeaveStateTerminalProduction(lhs, to, code);
 								getGrammar().addProduction(leave);
 							:}
-					|	REGEXP:from TILDA SYMBOL_STATE:state CODE_STRING?:code
+					|	REGEXP:from '~' SYMBOL_STATE:state CODE_STRING?:code
 							{:
 								Production production = getFactory().createEnterStateTerminalProduction(lhs, from, state, code);
 								getGrammar().addProduction(production);
@@ -383,29 +431,29 @@ rhs_terminal		::=	REGEXP:regexp CODE_STRING?:code
 								Production production = getFactory().createInStateTerminalProduction(lhs, state, regexp, code);
 								getGrammar().addProduction(production);
 							:}
-					|	SYMBOL_STATE:in TILDA REGEXP:regexp CODE_STRING?:code
+					|	SYMBOL_STATE:in '~' REGEXP:regexp CODE_STRING?:code
 							{:
 								Production production = getFactory().createLeaveStateTerminalProduction(lhs, in, regexp, code);
 								getGrammar().addProduction(production);
 							:}
-					|	SYMBOL_STATE:in TILDA REGEXP:regexp SYMBOL_STATE:to CODE_STRING?:code
+					|	SYMBOL_STATE:in '~' REGEXP:regexp SYMBOL_STATE:to CODE_STRING?:code
 							{:
 								Production production = getFactory().createEnterStateTerminalProduction(lhs, in, regexp, to, code);
 								getGrammar().addProduction(production);
 							:}
 					;
 
-rhs_state_list		::=	rhs_state ( BAR rhs_state ) *
+rhs_state_list		::=	rhs_state ( '|' rhs_state ) *
 					;
 
-rhs_state			::=	REGEXP:from TILDA REGEXP:to CODE_STRING?:code
+rhs_state			::=	REGEXP:from '~' REGEXP:to CODE_STRING?:code
 							{:
 								Production enter = getFactory().createEnterStateStateProduction(lhs, from, null);
 								getGrammar().addProduction(enter);
 								Production leave = getFactory().createLeaveStateStateProduction(lhs, to, code);
 								getGrammar().addProduction(leave);
 							:}
-					|	SYMBOL_STATE:in REGEXP:from TILDA REGEXP:to CODE_STRING?:code
+					|	SYMBOL_STATE:in REGEXP:from '~' REGEXP:to CODE_STRING?:code
 							{:
 								Production enter = getFactory().createEnterStateStateProduction(lhs, in, from, null);
 								getGrammar().addProduction(enter);
@@ -414,16 +462,16 @@ rhs_state			::=	REGEXP:from TILDA REGEXP:to CODE_STRING?:code
 							:}
 					;
 
-prod_precedence		::=	PERCENT_PREC symbol_id:term			{: RESULT = getKnownTerminal(term$, term); :}
+prod_precedence		::=	'%prec' symbol_id:term			{: RESULT = getKnownTerminal(term$, term); :}
 					;
 
 prod_part			::=	wild_symbol_id:symb label_id?:label	{: RESULT = getFactory().createSimplePart(symb, label); :}
 					|	CODE_STRING:code					{: RESULT = getFactory().createActionPart(code); :}
 					;
 
-wild_symbol_id		::=	wild_symbol_id:child STAR			{: RESULT = getFactory().createMany0Part(child); :} 
-					|	wild_symbol_id:child PLUS			{: RESULT = getFactory().createMany1Part(child); :} 
-					|	wild_symbol_id:child QUESTION		{: RESULT = getFactory().createOptionalPart(child); :} 
+wild_symbol_id		::=	wild_symbol_id:child '*'			{: RESULT = getFactory().createMany0Part(child); :} 
+					|	wild_symbol_id:child '+'			{: RESULT = getFactory().createMany1Part(child); :} 
+					|	wild_symbol_id:child '?'			{: RESULT = getFactory().createOptionalPart(child); :} 
 					|	symbol_id:symid						{: RESULT = getFactory().createSymbolPart(getKnownSymbol(symid$, symid)); :}
 					|	REGEXP:content
 							{:
@@ -433,30 +481,30 @@ wild_symbol_id		::=	wild_symbol_id:child STAR			{: RESULT = getFactory().createM
 								}
 								RESULT = getFactory().createSymbolPart(symbol);
 							:}
-					|	LPARENT prod_part+:prod RPARENT		{: RESULT = getFactory().createGroupPart(prod); :}
+					|	'(' prod_part+:prod ')'				{: RESULT = getFactory().createGroupPart(prod); :}
 					;
 
-label_id			::=	COLON robust_id:label				{: RESULT = label; :}
+label_id			::=	':' robust_id:label				{: RESULT = label; :}
 					;
 
 multipart_id		::=	robust_id:id						{: RESULT = new StringBuilder(id); :}
-					|	multipart_id:list DOT robust_id:id	{: RESULT = list.append('.').append(id); :}
+					|	multipart_id:list '.' robust_id:id	{: RESULT = list.append('.').append(id); :}
 					;
 
 type_id				::= multipart_id:id						{: RESULT = id; :}
-					|	type_id:id LBRACK RBRACK			{: RESULT = id.append("[]"); :}
-					|	multipart_id:id LT typearglist:types GT	{: RESULT = id.append('<').append(types).append('>'); :}
+					|	type_id:id '[' ']'			{: RESULT = id.append("[]"); :}
+					|	multipart_id:id '<' typearglist:types '>'	{: RESULT = id.append('<').append(types).append('>'); :}
 					;
 
 typearglist			::= typeargument:type					{: RESULT = type; :}
-					|	typearglist:list COMMA typeargument:arg	{: RESULT = list.append(",").append(arg); :}
+					|	typearglist:list ',' typeargument:arg	{: RESULT = list.append(",").append(arg); :}
 					;
 
 typeargument		::=	type_id:type						{: RESULT = type; :}
 					|	wildcard:name						{: RESULT = name; :}
 					;
 
-wildcard			::=	QUESTION							{: RESULT = new StringBuilder("?"); :}
+wildcard			::=	'?'									{: RESULT = new StringBuilder("?"); :}
 					|	wildcard:w EXTENDS type_id:id		{: RESULT = w.append(" extends ").append(id); :}
      				|	wildcard:w SUPER type_id:id			{: RESULT = w.append(" super ").append(id); :}
 					;
@@ -491,7 +539,6 @@ robust_id			::=	ID
 					|	PARSER
 					|	TERMINAL
 					|	NONTERMINAL
-					|	STATE
 					|	INIT
 					|	SCANNER
 					|	WITH
@@ -508,4 +555,57 @@ robust_id			::=	ID
 								ErrorManager.getManager().emit_error("Illegal use of reserved word", e$);
 								RESULT="ILLEGAL";
 							:}
+					;
+
+//macros
+terminal macro	Newline, Whitespace;
+terminal macro	Comment, TraditionalComment, EndOfLineComment, CommentContent;
+terminal macro	ident;
+
+Newline 			::= `\r | \n | \r\n` ;
+
+Whitespace			::=	 `[ \t\f] | {Newline}` ;
+
+Comment				::=	`{TraditionalComment} | {EndOfLineComment}` ;
+
+TraditionalComment	::=	`"/*" {CommentContent} \*+ "/"` ;
+EndOfLineComment	::= `"//" [^\r\n]* {Newline}` ;
+CommentContent		::=	`( [^*] | \*+[^*/] )*` ;
+
+ident				::=	`([:jletter:] | "_" ) ([:jletterdigit:] | [:jletter:] | "_" )* | [:jletterdigit:]+` ;
+
+//terminals
+
+terminal void	SUPPRESS;
+
+SUPPRESS		::=	`{Whitespace}` {: :}
+				|	`{Comment}` {: :}
+				;
+
+ID|SYMBOL_TERMINAL|SYMBOL_NONTERMINAL
+					::=	`{ident}`	{: return symbol(getToken(yytext()), yytext()); :}
+					;
+
+CODE_STRING			::=	"{:" ~ ":}";
+
+PACKAGE				::=	"package" ;
+IMPORT				::=	"import" ;
+OPTION				::= "option" ;
+SUPER				::= "super" ;
+EXTENDS				::= "extends" ;
+CODE				::= "code" ; 
+ACTION				::= "action" ;
+PARSER				::= "parser" ;
+INIT				::= "init" ;
+SCANNER				::= "scanner" ;
+WITH				::= "with" ;
+LEFT				::= "left" ;
+RIGHT				::= "right" ;
+NONASSOC			::= "nonassoc" ;
+AFTER				::= "after";
+REDUCE				::= "reduce" ;
+
+REGEXP				::= ```([^``]|````)*```		{: return symbol(ETerminal.REGEXP, regexpCleaner('`')); :}
+					|	`'([^']|'')*'`			{: return symbol(ETerminal.REGEXP, regexpCleaner('\'')); :}
+					|	`\"([^\"]|\"\")*\"`		{: return symbol(ETerminal.REGEXP, regexpCleaner('"')); :}
 					;
