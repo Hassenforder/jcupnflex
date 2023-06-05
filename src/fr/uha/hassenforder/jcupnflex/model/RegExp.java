@@ -23,7 +23,7 @@ public class RegExp extends Terminal {
 	 * @param index the index of the terminal.
 	 */
 	public RegExp(String name, String regexp, int priority, Associativity associativity) {
-		super(SymbolKind.REGEXP, name, "String", priority, associativity);
+		super(SymbolKind.REGEXP, name, null, priority, associativity);
 		this.regexp = regexp;
 	}
 

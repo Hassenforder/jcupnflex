@@ -7,6 +7,7 @@ package fr.uha.hassenforder.jcupnflex.model;
  * NONTERMINAL : a classic terminal to express rules
  * TERMINAL    : a classic terminal linked to the lexical analyser for the regexp
  * REGEXP	   : a special inlined terminal
+ * STATE	   : a future state in the lexical analyser
  *
  * @version last updated: 28/09/2022
  * @author Michel Hassenforder
@@ -16,4 +17,5 @@ public enum SymbolKind {
 	NONTERMINAL,
 	TERMINAL,
 	REGEXP,
+	STATE,
 }

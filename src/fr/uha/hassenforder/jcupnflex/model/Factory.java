@@ -12,13 +12,14 @@ public class Factory implements IFactory {
 		case NONTERMINAL:	return new NonTerminal(name, type);
 		case TERMINAL:		return new Terminal(name, type);
 		case REGEXP:		return null;
+		case STATE:			return new State (name, type);
 		default:			return null;
 		}
 	}
 
-	static private int instance = 0;
+	private int instance = 0;
 
-	static private String buildRegExpName () {
+	private String buildRegExpName () {
 		StringBuilder tmp = new StringBuilder ();
 		tmp.append("__REGEXP_");
 		tmp.append(++instance);
@@ -32,13 +33,76 @@ public class Factory implements IFactory {
 	}
 
 	@Override
-	public Production createProduction(GrammarSymbol lhs, List<ProductionPart> rhs, GrammarSymbol precedence) {
-		switch (lhs.getKind()) {
-		case NONTERMINAL:	return new NonTerminalProduction((NonTerminal) lhs, rhs, (Terminal) precedence);
-		case TERMINAL:		return new TerminalProduction((Terminal) lhs, rhs);
-		case REGEXP:		return null;
-		default:			return null;
-		}
+	public Production createNonTerminalProduction(GrammarSymbol lhs, List<ProductionPart> rhs, GrammarSymbol precedence) {
+		ProductionPart list = createListPart(rhs);
+		return new NonTerminalProduction((NonTerminal) lhs, list, (Terminal) precedence);
+	}
+	
+	@Override
+	public Production createSimpleTerminalProduction(GrammarSymbol lhs, String regexp, String code) {
+		Terminal terminal = (Terminal) lhs;
+		return new TerminalProduction(terminal, LexicalKind.SIMPLE, "", regexp, regexp, code);
+	}
+
+	@Override
+	public Production createEnterStateTerminalProduction(GrammarSymbol lhs, String regexp, String code) {
+		Terminal terminal = (Terminal) lhs;
+		return new TerminalProduction(terminal, LexicalKind.ENTER_STATE, "", regexp, null, code);
+	}
+
+	@Override
+	public Production createEnterStateTerminalProduction(GrammarSymbol lhs, String regexp, String state, String code) {
+		Terminal terminal = (Terminal) lhs;
+		return new TerminalProduction(terminal, LexicalKind.ENTER_STATE, "", regexp, state, code);
+	}
+
+	@Override
+	public Production createEnterStateTerminalProduction(GrammarSymbol lhs, String inState, String regexp, String state, String code) {
+		Terminal terminal = (Terminal) lhs;
+		return new TerminalProduction(terminal, LexicalKind.ENTER_STATE, inState, regexp, state, code);
+	}
+
+	@Override
+	public Production createInStateTerminalProduction(GrammarSymbol lhs, String code) {
+		Terminal terminal = (Terminal) lhs;
+		return new TerminalProduction(terminal, LexicalKind.IN_STATE, lhs.getName(), null, null, code);
+	}
+
+	@Override
+	public Production createInStateTerminalProduction(GrammarSymbol lhs, String inState, String regexp, String code) {
+		Terminal terminal = (Terminal) lhs;
+		return new TerminalProduction(terminal, LexicalKind.IN_STATE, inState, regexp, null, code);
+	}
+
+	@Override
+	public Production createLeaveStateTerminalProduction(GrammarSymbol lhs, String regexp, String code) {
+		Terminal terminal = (Terminal) lhs;
+		return new TerminalProduction(terminal, LexicalKind.LEAVE_STATE, lhs.getName(), regexp, null, code);
+	}
+	
+	@Override
+	public Production createLeaveStateTerminalProduction(GrammarSymbol lhs, String inState, String regexp, String code) {
+		Terminal terminal = (Terminal) lhs;
+		return new TerminalProduction(terminal, LexicalKind.LEAVE_STATE, inState, regexp, null, code);
+	}
+
+	
+	@Override
+	public Production createEnterStateStateProduction(GrammarSymbol lhs, String regexp, String code) {
+		State state = (State) lhs;
+		return new StateProduction(state, LexicalKind.ENTER_STATE, "", regexp, null, code);
+	}
+
+	@Override
+	public Production createEnterStateStateProduction(GrammarSymbol lhs, String in, String regexp, String code) {
+		State state = (State) lhs;
+		return new StateProduction(state, LexicalKind.ENTER_STATE, in, regexp, null, code);
+	}
+
+	@Override
+	public Production createLeaveStateStateProduction(GrammarSymbol lhs, String regexp, String code) {
+		State state = (State) lhs;
+		return new StateProduction(state, LexicalKind.LEAVE_STATE, lhs.getName(), regexp, null, code);
 	}
 
 	@Override
