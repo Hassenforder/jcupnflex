@@ -1,12 +1,12 @@
 ===== Messages =====
-Info: Delete file : C:\Users\Bastien\Desktop\Cours\ENSISA\Projet 2A\jcupnflex\src\calculator\ETerminal.java
-Info: Delete file : C:\Users\Bastien\Desktop\Cours\ENSISA\Projet 2A\jcupnflex\src\calculator\ENonterminal.java
-Info: Delete file : C:\Users\Bastien\Desktop\Cours\ENSISA\Projet 2A\jcupnflex\src\calculator\Parser.java
-Info: Delete file : C:\Users\Bastien\Desktop\Cours\ENSISA\Projet 2A\jcupnflex\src\calculator\Parser.dump
-Info: Generate Terminal file : C:\Users\Bastien\Desktop\Cours\ENSISA\Projet 2A\jcupnflex\src\calculator\ETerminal.java
-Info: Generate Nonterminal file : C:\Users\Bastien\Desktop\Cours\ENSISA\Projet 2A\jcupnflex\src\calculator\ENonterminal.java
-Info: Generate Parser file : C:\Users\Bastien\Desktop\Cours\ENSISA\Projet 2A\jcupnflex\src\calculator\Parser.java
-Info: Generate Dump file : C:\Users\Bastien\Desktop\Cours\ENSISA\Projet 2A\jcupnflex\src\calculator\Parser.dump
+Info: Delete file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\calculator\ETerminal.java
+Info: Delete file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\calculator\ENonterminal.java
+Info: Delete file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\calculator\Parser.java
+Info: Delete file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\calculator\Parser.dump
+Info: Generate Terminal file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\calculator\ETerminal.java
+Info: Generate Nonterminal file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\calculator\ENonterminal.java
+Info: Generate Parser file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\calculator\Parser.java
+Info: Generate Dump file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\calculator\Parser.dump
 ===== Terminals =====
 [0]error [1]EOF [2]EOLN [3]UNARIES 
 [4]__REGEXP_19__ [5]__REGEXP_20__ [6]__REGEXP_21__ [7]__REGEXP_22__ 

@@ -462,7 +462,6 @@ public class FlexWriter extends AbstractWriter {
 			close();
 			ErrorManager.getManager().emit_info("Generate Lexer : " + outputFile.getPath());			
 		}
-		
 	}
 
 }

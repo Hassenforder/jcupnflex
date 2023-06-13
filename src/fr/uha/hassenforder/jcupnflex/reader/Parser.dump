@@ -1,8 +1,12 @@
 ===== Messages =====
-Info: Generate Terminal file : C:\Users\Bastien\Desktop\Cours\ENSISA\Projet 2A\compilercompiler\jcupnflex\src\fr\uha\hassenforder\jcupnflex\reader\ETerminal.java
-Info: Generate Nonterminal file : C:\Users\Bastien\Desktop\Cours\ENSISA\Projet 2A\compilercompiler\jcupnflex\src\fr\uha\hassenforder\jcupnflex\reader\ENonterminal.java
-Info: Generate Parser file : C:\Users\Bastien\Desktop\Cours\ENSISA\Projet 2A\compilercompiler\jcupnflex\src\fr\uha\hassenforder\jcupnflex\reader\Parser.java
-Info: Generate Dump file : C:\Users\Bastien\Desktop\Cours\ENSISA\Projet 2A\compilercompiler\jcupnflex\src\fr\uha\hassenforder\jcupnflex\reader\Parser.dump
+Info: Delete file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\fr\uha\hassenforder\jcupnflex\reader\ETerminal.java
+Info: Delete file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\fr\uha\hassenforder\jcupnflex\reader\ENonterminal.java
+Info: Delete file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\fr\uha\hassenforder\jcupnflex\reader\Parser.java
+Info: Delete file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\fr\uha\hassenforder\jcupnflex\reader\Parser.dump
+Info: Generate Terminal file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\fr\uha\hassenforder\jcupnflex\reader\ETerminal.java
+Info: Generate Nonterminal file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\fr\uha\hassenforder\jcupnflex\reader\ENonterminal.java
+Info: Generate Parser file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\fr\uha\hassenforder\jcupnflex\reader\Parser.java
+Info: Generate Dump file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\fr\uha\hassenforder\jcupnflex\reader\Parser.dump
 ===== Terminals =====
 [0]error [1]EOF [2]SEMICOLON [3]COMMA 
 [4]COLON [5]COLON_COLON_EQUALS [6]BAR [7]PERCENT_PREC 

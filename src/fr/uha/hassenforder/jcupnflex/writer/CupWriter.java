@@ -295,4 +295,5 @@ public class CupWriter extends AbstractWriter {
 			ErrorManager.getManager().emit_info("Generate Parser : " + outputFile.getPath());
 		}
 	}
+
 }
