@@ -615,11 +615,7 @@ public class Lexer implements com.github.jhoenicke.javacup.runtime.Scanner {
 	public void setGrammar (Grammar grammar) {
 	   this.grammar = grammar;
 	}
-<<<<<<< HEAD
 
-=======
-	
->>>>>>> refs/heads/regions
 	// helpers to manage the whole code segment
 	private StringBuilder cs;
     private int csline, cscolumn;

@@ -1,8 +1,4 @@
 ===== Messages =====
-Info: Delete file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\fr\uha\hassenforder\jcupnflex\reader\ETerminal.java
-Info: Delete file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\fr\uha\hassenforder\jcupnflex\reader\ENonterminal.java
-Info: Delete file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\fr\uha\hassenforder\jcupnflex\reader\Parser.java
-Info: Delete file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\fr\uha\hassenforder\jcupnflex\reader\Parser.dump
 Info: Generate Terminal file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\fr\uha\hassenforder\jcupnflex\reader\ETerminal.java
 Info: Generate Nonterminal file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\fr\uha\hassenforder\jcupnflex\reader\ENonterminal.java
 Info: Generate Parser file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\fr\uha\hassenforder\jcupnflex\reader\Parser.java
