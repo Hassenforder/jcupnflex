@@ -37,15 +37,15 @@ parser code {:
 
 :}
 
-terminal  EOLN, UNARIES, __REGEXP_19__, __REGEXP_20__, __REGEXP_21__, __REGEXP_22__, __REGEXP_23__, __REGEXP_24__, __REGEXP_25__;
+terminal  EOLN, UNARIES, __REGEXP_1__, __REGEXP_2__, __REGEXP_3__, __REGEXP_4__, __REGEXP_5__, __REGEXP_6__, __REGEXP_7__;
 terminal Integer NUMBER;
 terminal String ID;
 
 nonterminal  command, instr, list;
 nonterminal Integer expr;
 
-precedence left __REGEXP_19__, __REGEXP_20__;
-precedence left __REGEXP_21__, __REGEXP_22__;
+precedence left __REGEXP_1__, __REGEXP_2__;
+precedence left __REGEXP_3__, __REGEXP_4__;
 precedence right UNARIES;
 
 
@@ -54,18 +54,18 @@ start with command;
 command	::=	list 
 		;
 
-expr	::=	expr:e1 __REGEXP_19__ expr:e2 {:  RESULT = e1 + e2;  :} 
-		|	expr:e1 __REGEXP_20__ expr:e2 {:  RESULT = e1 - e2;  :} 
-		|	expr:e1 __REGEXP_21__ expr:e2 {:  RESULT = e1 * e2;  :} 
-		|	expr:e1 __REGEXP_22__ expr:e2 {:  RESULT = e1 / e2;  :} 
-		|	__REGEXP_20__ expr:e {:  RESULT = - e;  :}  %prec UNARIES
-		|	__REGEXP_19__ expr:e {:  RESULT = + e;  :}  %prec UNARIES
-		|	__REGEXP_24__ expr:e __REGEXP_25__ {:  RESULT = e;  :} 
+expr	::=	expr:e1 __REGEXP_1__ expr:e2 {:  RESULT = e1 + e2;  :} 
+		|	expr:e1 __REGEXP_2__ expr:e2 {:  RESULT = e1 - e2;  :} 
+		|	expr:e1 __REGEXP_3__ expr:e2 {:  RESULT = e1 * e2;  :} 
+		|	expr:e1 __REGEXP_4__ expr:e2 {:  RESULT = e1 / e2;  :} 
+		|	__REGEXP_2__ expr:e {:  RESULT = - e;  :}  %prec UNARIES
+		|	__REGEXP_1__ expr:e {:  RESULT = + e;  :}  %prec UNARIES
+		|	__REGEXP_6__ expr:e __REGEXP_7__ {:  RESULT = e;  :} 
 		|	NUMBER:n {:  RESULT = n;  :} 
 		|	ID:n {:  RESULT = parser.getValue(n);  :} 
 		;
 
-instr	::=	ID:n __REGEXP_23__ expr:e {:  parser.setValue (n, e);  :} 
+instr	::=	ID:n __REGEXP_5__ expr:e {:  parser.setValue (n, e);  :} 
 		|	expr:e {:  System.out.println (e);  :} 
 		;
 

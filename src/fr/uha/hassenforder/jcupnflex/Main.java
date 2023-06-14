@@ -97,7 +97,7 @@ public class Main {
     		process (inputFileName);
     	}
     	if (options.getInputFiles().isEmpty()) {
-    		process ("jcupnflex.cnf");
+    		process ("calc.cnf");
     	}
     	return true;
 	}

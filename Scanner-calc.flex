@@ -72,13 +72,13 @@ private Region endRegion (int targetState) {
 %%
 
 <YYINITIAL> {
-  "("		{ return symbol(ETerminal.__REGEXP_24__); }
-  ")"		{ return symbol(ETerminal.__REGEXP_25__); }
-  "*"		{ return symbol(ETerminal.__REGEXP_21__); }
-  "+"		{ return symbol(ETerminal.__REGEXP_19__); }
-  "-"		{ return symbol(ETerminal.__REGEXP_20__); }
-  "/"		{ return symbol(ETerminal.__REGEXP_22__); }
-  "="		{ return symbol(ETerminal.__REGEXP_23__); }
+  "("		{ return symbol(ETerminal.__REGEXP_6__); }
+  ")"		{ return symbol(ETerminal.__REGEXP_7__); }
+  "*"		{ return symbol(ETerminal.__REGEXP_3__); }
+  "+"		{ return symbol(ETerminal.__REGEXP_1__); }
+  "-"		{ return symbol(ETerminal.__REGEXP_2__); }
+  "/"		{ return symbol(ETerminal.__REGEXP_4__); }
+  "="		{ return symbol(ETerminal.__REGEXP_5__); }
   [ \t\f]		{   }
   \r\n|\r|\n		{ return symbol(ETerminal.EOLN); }
   [0-9]+		{ return symbol(ETerminal.NUMBER, Integer.parseInt(yytext())); }
