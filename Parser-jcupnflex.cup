@@ -1,0 +1,438 @@
+package reader;
+
+
+import fr.uha.hassenforder.jcupnflex.ErrorManager;
+import fr.uha.hassenforder.jcupnflex.model.Associativity;
+import fr.uha.hassenforder.jcupnflex.model.Directive;
+import fr.uha.hassenforder.jcupnflex.model.DirectiveSet;
+import fr.uha.hassenforder.jcupnflex.model.IFactory;
+import fr.uha.hassenforder.jcupnflex.model.Grammar;
+import fr.uha.hassenforder.jcupnflex.model.GrammarSymbol;
+import fr.uha.hassenforder.jcupnflex.model.NonTerminal;
+import fr.uha.hassenforder.jcupnflex.model.Production;
+import fr.uha.hassenforder.jcupnflex.model.ProductionPart;
+import fr.uha.hassenforder.jcupnflex.model.RegExp;
+import fr.uha.hassenforder.jcupnflex.model.State;
+import fr.uha.hassenforder.jcupnflex.model.SymbolKind;
+import fr.uha.hassenforder.jcupnflex.model.Terminal;
+
+
+
+action code {:
+
+
+    private Grammar getGrammar() {
+        return parser.grammar;
+    }
+    
+    public IFactory getFactory() {
+        return parser.factory;
+    }
+    
+    public DirectiveSet getDirectives() {
+        return parser.directives;
+    }
+    
+	/** current kind of symbol to declare */
+	private SymbolKind currentKind;
+	/** current type of symbol to declare */
+	private String currentType;
+
+	/** Current precedence priority */
+	private int currentPriority = 0;
+	/** Current precedence associativity */
+	private Associativity currentAssociativity = Associativity.NO;
+
+	/** update the precedences we are declaring */
+	private void updatePrecedence(Associativity associativity) {
+		this.currentAssociativity = associativity;
+		if (associativity != Associativity.NO) {
+			++this.currentPriority;
+	    }
+	}
+  
+	private GrammarSymbol lhs = null;
+
+	/** update the lhs symbol of a production */
+	private void updateLhs(GrammarSymbol lhs) {
+		this.lhs = lhs;
+    }
+  
+	private GrammarSymbol getKnownSymbol(com.github.jhoenicke.javacup.runtime.Symbol location, String id) {
+		GrammarSymbol sym = getGrammar().getSymbol(id);
+		if (sym == null) {
+			ErrorManager.getManager().emit_warning("Symbol \"" + id + "\" has not been declared", location);
+		}
+		return sym;
+	}
+  
+	private Terminal getKnownTerminal(com.github.jhoenicke.javacup.runtime.Symbol location, String id) {
+		Terminal sym = getGrammar().getTerminal(id);
+		if (sym == null) {
+			ErrorManager.getManager().emit_warning("Terminal \"" + id + "\" has not been declared", location);
+		}
+		return sym;
+	}
+  
+	private NonTerminal getKnownNonTerminal(com.github.jhoenicke.javacup.runtime.Symbol location, String id) {
+		NonTerminal sym = getGrammar().getNonTerminal(id);
+		if (sym == null) {
+			ErrorManager.getManager().emit_warning("Non terminal \"" + id + "\" has not been declared", location);
+		}
+		return sym;
+	}
+    
+	private State getKnownState(com.github.jhoenicke.javacup.runtime.Symbol location, String id) {
+		State sym = getGrammar().getState(id);
+		if (sym == null) {
+			ErrorManager.getManager().emit_warning("State \"" + id + "\" has not been declared", location);
+		}
+		return sym;
+	}
+
+
+:}
+parser code {:
+
+
+/** global variables to store the grammar the directivess and a factory to build various concepts */
+	private IFactory factory;
+	private Grammar grammar;
+	private DirectiveSet directives;
+
+    public void setGrammar(Grammar  grammar) {
+        this.grammar = grammar;
+    }
+    
+    public void setFactory(IFactory factory) {
+        this.factory = factory;
+    }
+    
+    public void setDirectiveSet(DirectiveSet directives) {
+        this.directives = directives;
+    }
+    
+
+:}
+
+terminal  __REGEXP_10__, __REGEXP_11__, __REGEXP_12__, __REGEXP_13__, __REGEXP_14__, __REGEXP_15__, __REGEXP_16__, __REGEXP_17__, __REGEXP_18__, __REGEXP_1__, __REGEXP_2__, __REGEXP_3__, __REGEXP_4__, __REGEXP_5__, __REGEXP_6__, __REGEXP_7__, __REGEXP_8__, __REGEXP_9__;
+terminal String ACTION, AFTER, CODE, CODE_STRING, EXPECT, EXTENDS, ID, IMPORT, INIT, LEFT, NONASSOC, NONTERMINAL, OPTION, PACKAGE, PARSER, PRECEDENCE, REDUCE, REGEXP, RIGHT, SCANNER, START, STATE, SUPER, SYMBOL_NONTERMINAL, SYMBOL_STATE, SYMBOL_TERMINAL, TERMINAL, WITH;
+
+nonterminal  associativity_decl, custom_code_spec, expect_spec, grammar, lhs_nonterminal, lhs_state, lhs_terminal, new_symbol_id, option_, option_list, option_spec, package_spec, parser_spec, precedence_list, precedence_spec, precterminal_id, production_spec, rhs_nonterminal, rhs_nonterminal_list, rhs_state, rhs_state_list, rhs_terminal, rhs_terminal_list, spec, start_spec, symbol_decl, symbol_kind, symbol_list, symbol_spec, symbol_type;
+nonterminal Directive key_code;
+nonterminal ProductionPart prod_part, wild_symbol_id;
+nonterminal String label_id, robust_id, symbol_id;
+nonterminal StringBuilder multipart_id, type_id, typearglist, typeargument, wildcard;
+nonterminal Terminal prod_precedence;
+
+
+
+start with grammar;
+
+associativity_decl		::=	LEFT {:  updatePrecedence(Associativity.LEFT);  :} 
+						|	RIGHT {:  updatePrecedence(Associativity.RIGHT);  :} 
+						|	NONASSOC {:  updatePrecedence(Associativity.NONE);  :} 
+						;
+
+custom_code_spec		::=	key_code:key CODE_STRING:code {: 
+								if ( ! getDirectives().setDirective(key, code)) {
+									ErrorManager.getManager().emit_warning("Redundant " + key + " (skipping)");
+								}
+							 :} 
+						;
+
+expect_spec				::=	EXPECT robust_id:val {: 
+								if ( ! getDirectives().setDirective(Directive.EXPECT, val)) {
+									ErrorManager.getManager().emit_warning("Redundant expect (skipping)");
+								}
+							 :} 
+						;
+
+grammar					::=	( spec  ) * 
+						;
+
+key_code				::=	PARSER ACTION CODE {:  RESULT = Directive.PARSER_ACTION_CODE;  :} 
+						|	PARSER IMPORT CODE {:  RESULT = Directive.PARSER_IMPORT_CODE;  :} 
+						|	PARSER CODE {:  RESULT = Directive.PARSER_CODE;  :} 
+						|	PARSER INIT WITH {:  RESULT = Directive.PARSER_INIT_CODE;  :} 
+						|	PARSER AFTER REDUCE {:  RESULT = Directive.PARSER_AFTER_REDUCE_CODE;  :} 
+						|	SCANNER IMPORT CODE {:  RESULT = Directive.SCANNER_IMPORT_CODE;  :} 
+						|	SCANNER CODE {:  RESULT = Directive.SCANNER_CODE;  :} 
+						;
+
+label_id				::=	__REGEXP_13__ robust_id:label {:  RESULT = label;  :} 
+						;
+
+lhs_nonterminal			::=	SYMBOL_NONTERMINAL:lhs_id {:  updateLhs(getKnownNonTerminal(lhs_id$, lhs_id));  :} 
+						;
+
+lhs_state				::=	SYMBOL_STATE:lhs_id {:  updateLhs(getKnownState(lhs_id$, lhs_id));  :} 
+						;
+
+lhs_terminal			::=	SYMBOL_TERMINAL:lhs_id ( __REGEXP_5__ SYMBOL_TERMINAL  ) * {:  updateLhs(getKnownTerminal(lhs_id$, lhs_id));  :} 
+						;
+
+multipart_id			::=	robust_id:id {:  RESULT = new StringBuilder(id);  :} 
+						|	multipart_id:list __REGEXP_14__ robust_id:id {:  RESULT = list.append('.').append(id);  :} 
+						;
+
+new_symbol_id			::=	symbol_id:sym_id {:  
+								if (getGrammar().getSymbol(sym_id) != null) {
+									ErrorManager.getManager().emit_error("Symbol \"" + sym_id + "\" has already been declared", sym_id$);
+								} else {
+									GrammarSymbol symbol = getFactory().createSymbol(currentKind, sym_id, currentType);
+									if (symbol == null) {
+										ErrorManager.getManager().emit_error("Symbol \"" + sym_id + "\" is not declared", sym_id$);
+									} else {
+										getGrammar().addUniqueSymbol(symbol);
+									}
+								}
+							 :} 
+						;
+
+option_					::=	robust_id:opt {: 
+								if ( ! getDirectives().addDirective(Directive.OPTION, opt, null)) {
+									ErrorManager.getManager().emit_warning("Redundant option " + opt + " (skipping)");
+								}
+							 :} 
+						|	robust_id:opt __REGEXP_3__ robust_id:val {: 
+								if ( ! getDirectives().addDirective(Directive.OPTION, opt, val)) {
+									ErrorManager.getManager().emit_warning("Redundant option " + opt + " = " + val + " (skipping)");
+								}
+							 :} 
+						;
+
+option_list				::=	option_ ( __REGEXP_2__ option_  ) * 
+						;
+
+option_spec				::=	OPTION option_list 
+						;
+
+package_spec			::=	PACKAGE multipart_id:id {: 
+								if ( ! getDirectives().setDirective(Directive.PACKAGE_NAME, id.toString())) {
+									ErrorManager.getManager().emit_warning("Redundant package name (skipping)");
+								}
+							 :} 
+						;
+
+parser_spec				::=	PARSER multipart_id:name {: 
+								if ( ! getDirectives().setDirective(Directive.PARSER_NAME, name.toString())) {
+									ErrorManager.getManager().emit_warning("Redundant parser name (skipping)");
+								}
+							 :} 
+						;
+
+precedence_list			::=	precterminal_id ( __REGEXP_2__ precterminal_id  ) * 
+						;
+
+precedence_spec			::=	PRECEDENCE associativity_decl precedence_list 
+						;
+
+precterminal_id			::=	symbol_id:name {: 
+								Terminal symbol = getKnownTerminal(name$, name);
+								if (symbol == null) {
+									ErrorManager.getManager().emit_error("Symbol \"" + name + "\" is not declared and cannot be used for precedence", name$);
+								} else {
+									symbol.setPrecedence(currentPriority, currentAssociativity);
+								}
+							 :} 
+						|	REGEXP:content {: 
+								RegExp symbol = getGrammar().getOrAddRegexp(content);
+								if (symbol == null) {
+									ErrorManager.getManager().emit_error("Regexp \"" + content + "\" cannot be declared for precedence", content$);
+								} else {
+									symbol.setPrecedence(currentPriority, currentAssociativity);
+								}
+							 :} 
+						;
+
+prod_part				::=	wild_symbol_id:symb label_id ?:label {:  RESULT = getFactory().createSimplePart(symb, label);  :} 
+						|	CODE_STRING:code {:  RESULT = getFactory().createActionPart(code);  :} 
+						;
+
+prod_precedence			::=	__REGEXP_7__ symbol_id:term {:  RESULT = getKnownTerminal(term$, term);  :} 
+						;
+
+production_spec			::=	lhs_nonterminal __REGEXP_4__ rhs_nonterminal_list 
+						|	lhs_terminal __REGEXP_4__ rhs_terminal_list 
+						|	lhs_state __REGEXP_4__ rhs_state_list 
+						;
+
+rhs_nonterminal			::=	prod_part *:rhs prod_precedence ?:precedence {: 
+								Production production = getFactory().createNonTerminalProduction(lhs, rhs, precedence);
+								getGrammar().addProduction(production);
+							 :} 
+						;
+
+rhs_nonterminal_list	::=	rhs_nonterminal ( __REGEXP_5__ rhs_nonterminal  ) * 
+						;
+
+rhs_state				::=	REGEXP:from __REGEXP_6__ REGEXP:to CODE_STRING ?:code {: 
+								Production enter = getFactory().createEnterStateStateProduction(lhs, from, null);
+								getGrammar().addProduction(enter);
+								Production leave = getFactory().createLeaveStateStateProduction(lhs, to, code);
+								getGrammar().addProduction(leave);
+							 :} 
+						|	SYMBOL_STATE:in REGEXP:from __REGEXP_6__ REGEXP:to CODE_STRING ?:code {: 
+								Production enter = getFactory().createEnterStateStateProduction(lhs, in, from, null);
+								getGrammar().addProduction(enter);
+								Production leave = getFactory().createLeaveStateStateProduction(lhs, to, code);
+								getGrammar().addProduction(leave);
+							 :} 
+						;
+
+rhs_state_list			::=	rhs_state ( __REGEXP_5__ rhs_state  ) * 
+						;
+
+rhs_terminal			::=	REGEXP:regexp CODE_STRING ?:code {: 
+								Production production = getFactory().createSimpleTerminalProduction(lhs, regexp, code);
+								getGrammar().addProduction(production);
+							 :} 
+						|	REGEXP:from __REGEXP_6__ REGEXP:to CODE_STRING ?:code {: 
+								Production enter = getFactory().createEnterStateTerminalProduction(lhs, from, null);
+								getGrammar().addProduction(enter);
+								Production in = getFactory().createInStateTerminalProduction(lhs, null);
+								getGrammar().addProduction(in);
+								Production leave = getFactory().createLeaveStateTerminalProduction(lhs, to, code);
+								getGrammar().addProduction(leave);
+							 :} 
+						|	REGEXP:from __REGEXP_6__ SYMBOL_STATE:state CODE_STRING ?:code {: 
+								Production production = getFactory().createEnterStateTerminalProduction(lhs, from, state, code);
+								getGrammar().addProduction(production);
+							 :} 
+						|	SYMBOL_STATE:state REGEXP:regexp CODE_STRING ?:code {: 
+								Production production = getFactory().createInStateTerminalProduction(lhs, state, regexp, code);
+								getGrammar().addProduction(production);
+							 :} 
+						|	SYMBOL_STATE:in __REGEXP_6__ REGEXP:regexp CODE_STRING ?:code {: 
+								Production production = getFactory().createLeaveStateTerminalProduction(lhs, in, regexp, code);
+								getGrammar().addProduction(production);
+							 :} 
+						|	SYMBOL_STATE:in __REGEXP_6__ REGEXP:regexp SYMBOL_STATE:to CODE_STRING ?:code {: 
+								Production production = getFactory().createEnterStateTerminalProduction(lhs, in, regexp, to, code);
+								getGrammar().addProduction(production);
+							 :} 
+						;
+
+rhs_terminal_list		::=	rhs_terminal ( __REGEXP_5__ rhs_terminal  ) * 
+						;
+
+robust_id				::=	ID 
+						|	SYMBOL_TERMINAL 
+						|	SYMBOL_NONTERMINAL 
+						|	SYMBOL_STATE 
+						|	OPTION 
+						|	CODE 
+						|	ACTION 
+						|	PARSER 
+						|	TERMINAL 
+						|	NONTERMINAL 
+						|	INIT 
+						|	SCANNER 
+						|	WITH 
+						|	START 
+						|	EXPECT 
+						|	PRECEDENCE 
+						|	LEFT 
+						|	RIGHT 
+						|	NONASSOC 
+						|	AFTER 
+						|	REDUCE 
+						|	error:e {: 
+								ErrorManager.getManager().emit_error("Illegal use of reserved word", e$);
+								RESULT="ILLEGAL";
+							 :} 
+						;
+
+spec					::=	package_spec __REGEXP_1__ 
+						|	option_spec __REGEXP_1__ 
+						|	parser_spec __REGEXP_1__ 
+						|	custom_code_spec 
+						|	symbol_spec __REGEXP_1__ 
+						|	precedence_spec __REGEXP_1__ 
+						|	expect_spec __REGEXP_1__ 
+						|	start_spec __REGEXP_1__ 
+						|	production_spec __REGEXP_1__ 
+						|	error __REGEXP_1__ 
+						;
+
+start_spec				::=	START WITH symbol_id:name {: 
+								NonTerminal symbol = getKnownNonTerminal(name$, name);
+								if (symbol == null) {
+									ErrorManager.getManager().emit_error("Symbol \"" + name + "\" is not declared for start symbol", name$);
+								} else {
+									getGrammar().setStartSymbol(symbol); 
+								}
+							 :} 
+						;
+
+symbol_decl				::=	symbol_kind:kind symbol_type:type 
+						|	symbol_kind:kind 
+						;
+
+symbol_id				::=	ID 
+						|	SYMBOL_TERMINAL 
+						|	SYMBOL_NONTERMINAL 
+						|	SYMBOL_STATE 
+						|	OPTION 
+						|	SUPER 
+						|	EXTENDS 
+						|	CODE 
+						|	ACTION 
+						|	PARSER 
+						|	INIT 
+						|	SCANNER 
+						|	WITH 
+						|	LEFT 
+						|	RIGHT 
+						|	NONASSOC 
+						|	AFTER 
+						|	REDUCE 
+						;
+
+symbol_kind				::=	TERMINAL {:  currentKind = SymbolKind.TERMINAL;  :} 
+						|	NONTERMINAL {:  currentKind = SymbolKind.NONTERMINAL;  :} 
+						|	STATE {:  currentKind = SymbolKind.STATE;  :} 
+						;
+
+symbol_list				::=	new_symbol_id ( __REGEXP_2__ new_symbol_id  ) * 
+						;
+
+symbol_spec				::=	symbol_decl symbol_list {:  currentType = null;  :} 
+						;
+
+symbol_type				::=	type_id:id {:  currentType = id.toString();  :} 
+						;
+
+type_id					::=	multipart_id:id {:  RESULT = id;  :} 
+						|	type_id:id __REGEXP_15__ __REGEXP_16__ {:  RESULT = id.append("[]");  :} 
+						|	multipart_id:id __REGEXP_17__ typearglist:types __REGEXP_18__ {:  RESULT = id.append('<').append(types).append('>');  :} 
+						;
+
+typearglist				::=	typeargument:type {:  RESULT = type;  :} 
+						|	typearglist:list __REGEXP_2__ typeargument:arg {:  RESULT = list.append(",").append(arg);  :} 
+						;
+
+typeargument			::=	type_id:type {:  RESULT = type;  :} 
+						|	wildcard:name {:  RESULT = name;  :} 
+						;
+
+wild_symbol_id			::=	wild_symbol_id:child __REGEXP_8__ {:  RESULT = getFactory().createMany0Part(child);  :} 
+						|	wild_symbol_id:child __REGEXP_9__ {:  RESULT = getFactory().createMany1Part(child);  :} 
+						|	wild_symbol_id:child __REGEXP_10__ {:  RESULT = getFactory().createOptionalPart(child);  :} 
+						|	symbol_id:symid {:  RESULT = getFactory().createSymbolPart(getKnownSymbol(symid$, symid));  :} 
+						|	REGEXP:content {: 
+								RegExp symbol = getGrammar().getOrAddRegexp(content);
+								if (symbol == null) {
+									ErrorManager.getManager().emit_error("Regexp \"" + content + "\" cannot be used ", content$);
+								}
+								RESULT = getFactory().createSymbolPart(symbol);
+							 :} 
+						|	__REGEXP_11__ prod_part +:prod __REGEXP_12__ {:  RESULT = getFactory().createGroupPart(prod);  :} 
+						;
+
+wildcard				::=	__REGEXP_10__ {:  RESULT = new StringBuilder("?");  :} 
+						|	wildcard:w EXTENDS type_id:id {:  RESULT = w.append(" extends ").append(id);  :} 
+						|	wildcard:w SUPER type_id:id {:  RESULT = w.append(" super ").append(id);  :} 
+						;
+
