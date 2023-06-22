@@ -55,6 +55,18 @@ public class Options {
 	 * @return the count of arg used
 	 */
 	private int setOption(String option, String arg1) {
+		if (option.equals("-out")) {
+			if (arg1 != null) {
+				if (! ErrorManager.getManager().setOutput (arg1)) {
+					ErrorManager.getManager().emit_fatal("the output file cannot be created");
+					return 0;
+				}
+				return 2;
+			} else {
+				ErrorManager.getManager().emit_fatal("out must have a name argument");
+				return 0;
+			}
+		}
 		if (option.equals("-destdir")) {
 			if (arg1 != null) {
 				destDir = arg1;

@@ -1,16 +1,12 @@
 ===== Messages =====
-Info: Delete file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\calculator\ETerminal.java
-Info: Delete file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\calculator\ENonterminal.java
-Info: Delete file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\calculator\Parser.java
-Info: Delete file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\calculator\Parser.dump
 Info: Generate Terminal file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\calculator\ETerminal.java
 Info: Generate Nonterminal file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\calculator\ENonterminal.java
 Info: Generate Parser file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\calculator\Parser.java
 Info: Generate Dump file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder\fr.uha.hassenforder.jcupnflex\src\calculator\Parser.dump
 ===== Terminals =====
 [0]error [1]EOF [2]EOLN [3]UNARIES 
-[4]__REGEXP_19__ [5]__REGEXP_20__ [6]__REGEXP_21__ [7]__REGEXP_22__ 
-[8]__REGEXP_23__ [9]__REGEXP_24__ [10]__REGEXP_25__ [11]NUMBER<Integer> 
+[4]__REGEXP_1__ [5]__REGEXP_2__ [6]__REGEXP_3__ [7]__REGEXP_4__ 
+[8]__REGEXP_5__ [9]__REGEXP_6__ [10]__REGEXP_7__ [11]NUMBER<Integer> 
 [12]ID<String> 
 
 ===== Non terminals =====
@@ -20,16 +16,16 @@ Info: Generate Dump file : C:\Users\miche\eclipse-Workspaces\Compilation-Builder
 ===== Productions =====
 [0] $START ::= command EOF 
 [1] command ::= list 
-[2] expr ::= expr __REGEXP_19__ expr 
-[3] expr ::= expr __REGEXP_20__ expr 
-[4] expr ::= expr __REGEXP_21__ expr 
-[5] expr ::= expr __REGEXP_22__ expr 
-[6] expr ::= __REGEXP_20__ expr 
-[7] expr ::= __REGEXP_19__ expr 
-[8] expr ::= __REGEXP_24__ expr __REGEXP_25__ 
+[2] expr ::= expr __REGEXP_1__ expr 
+[3] expr ::= expr __REGEXP_2__ expr 
+[4] expr ::= expr __REGEXP_3__ expr 
+[5] expr ::= expr __REGEXP_4__ expr 
+[6] expr ::= __REGEXP_2__ expr 
+[7] expr ::= __REGEXP_1__ expr 
+[8] expr ::= __REGEXP_6__ expr __REGEXP_7__ 
 [9] expr ::= NUMBER 
 [10] expr ::= ID 
-[11] instr ::= ID __REGEXP_23__ expr 
+[11] instr ::= ID __REGEXP_5__ expr 
 [12] instr ::= expr 
 [13] $parenthesis1 ::= instr EOLN 
 [14] list ::= $parenthesis1$0_many 
@@ -41,8 +37,8 @@ lalr_state [0]: {
   [$START ::= (*) command EOF , {EOF[1]}]
   [command ::= (*) list , {EOF[1]}]
   [list ::= (*) $parenthesis1$0_many , {EOF[1]}]
-  [$parenthesis1$0_many ::= (*) , {EOF[1], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_24__[9], NUMBER<Integer>[11], ID<String>[12]}]
-  [$parenthesis1$0_many ::= (*) $parenthesis1$0_many $parenthesis1 , {EOF[1], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_24__[9], NUMBER<Integer>[11], ID<String>[12]}]
+  [$parenthesis1$0_many ::= (*) , {EOF[1], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_6__[9], NUMBER<Integer>[11], ID<String>[12]}]
+  [$parenthesis1$0_many ::= (*) $parenthesis1$0_many $parenthesis1 , {EOF[1], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_6__[9], NUMBER<Integer>[11], ID<String>[12]}]
 }
 transition on $parenthesis1$0_many to state [2]
 transition on list to state [1]
@@ -57,28 +53,28 @@ transition on EOF to state [3]
 -------------------
 lalr_state [2]: {
   [$START ::= command (*) EOF , {EOF[1]}]
-  [$parenthesis1$0_many ::= $parenthesis1$0_many (*) $parenthesis1 , {EOF[1], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_24__[9], NUMBER<Integer>[11], ID<String>[12]}]
-  [expr ::= (*) expr __REGEXP_19__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
-  [expr ::= (*) expr __REGEXP_20__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
-  [expr ::= (*) expr __REGEXP_21__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
-  [expr ::= (*) expr __REGEXP_22__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
-  [expr ::= (*) __REGEXP_20__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
-  [expr ::= (*) __REGEXP_19__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
-  [expr ::= (*) __REGEXP_24__ expr __REGEXP_25__ , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
-  [expr ::= (*) NUMBER , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
-  [expr ::= (*) ID , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
-  [instr ::= (*) ID __REGEXP_23__ expr , {EOLN[2]}]
+  [$parenthesis1$0_many ::= $parenthesis1$0_many (*) $parenthesis1 , {EOF[1], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_6__[9], NUMBER<Integer>[11], ID<String>[12]}]
+  [expr ::= (*) expr __REGEXP_1__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
+  [expr ::= (*) expr __REGEXP_2__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
+  [expr ::= (*) expr __REGEXP_3__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
+  [expr ::= (*) expr __REGEXP_4__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
+  [expr ::= (*) __REGEXP_2__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
+  [expr ::= (*) __REGEXP_1__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
+  [expr ::= (*) __REGEXP_6__ expr __REGEXP_7__ , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
+  [expr ::= (*) NUMBER , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
+  [expr ::= (*) ID , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
+  [instr ::= (*) ID __REGEXP_5__ expr , {EOLN[2]}]
   [instr ::= (*) expr , {EOLN[2]}]
-  [$parenthesis1 ::= (*) instr EOLN , {EOF[1], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_24__[9], NUMBER<Integer>[11], ID<String>[12]}]
+  [$parenthesis1 ::= (*) instr EOLN , {EOF[1], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_6__[9], NUMBER<Integer>[11], ID<String>[12]}]
 }
 transition on $parenthesis1 to state [11]
 transition on expr to state [10]
 transition on instr to state [9]
 transition on ID to state [8]
 transition on NUMBER to state [7]
-transition on __REGEXP_24__ to state [6]
-transition on __REGEXP_20__ to state [5]
-transition on __REGEXP_19__ to state [4]
+transition on __REGEXP_6__ to state [6]
+transition on __REGEXP_2__ to state [5]
+transition on __REGEXP_1__ to state [4]
 transition on EOF to state [3]
 
 -------------------
@@ -88,319 +84,319 @@ lalr_state [3]: {
 
 -------------------
 lalr_state [4]: {
-  [expr ::= __REGEXP_19__ (*) expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_19__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_20__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_21__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_22__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) __REGEXP_20__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) __REGEXP_19__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) __REGEXP_24__ expr __REGEXP_25__ , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) NUMBER , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) ID , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
+  [expr ::= __REGEXP_1__ (*) expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_1__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_2__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_3__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_4__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) __REGEXP_2__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) __REGEXP_1__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) __REGEXP_6__ expr __REGEXP_7__ , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) NUMBER , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) ID , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
 }
 transition on expr to state [13]
 transition on ID to state [12]
 transition on NUMBER to state [7]
-transition on __REGEXP_24__ to state [6]
-transition on __REGEXP_20__ to state [5]
-transition on __REGEXP_19__ to state [4]
+transition on __REGEXP_6__ to state [6]
+transition on __REGEXP_2__ to state [5]
+transition on __REGEXP_1__ to state [4]
 
 -------------------
 lalr_state [5]: {
-  [expr ::= __REGEXP_20__ (*) expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_19__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_20__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_21__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_22__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) __REGEXP_20__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) __REGEXP_19__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) __REGEXP_24__ expr __REGEXP_25__ , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) NUMBER , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) ID , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
+  [expr ::= __REGEXP_2__ (*) expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_1__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_2__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_3__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_4__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) __REGEXP_2__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) __REGEXP_1__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) __REGEXP_6__ expr __REGEXP_7__ , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) NUMBER , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) ID , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
 }
 transition on expr to state [14]
 transition on ID to state [12]
 transition on NUMBER to state [7]
-transition on __REGEXP_24__ to state [6]
-transition on __REGEXP_20__ to state [5]
-transition on __REGEXP_19__ to state [4]
+transition on __REGEXP_6__ to state [6]
+transition on __REGEXP_2__ to state [5]
+transition on __REGEXP_1__ to state [4]
 
 -------------------
 lalr_state [6]: {
-  [expr ::= __REGEXP_24__ (*) expr __REGEXP_25__ , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_19__ expr , {__REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_20__ expr , {__REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_21__ expr , {__REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_22__ expr , {__REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) __REGEXP_20__ expr , {__REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) __REGEXP_19__ expr , {__REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) __REGEXP_24__ expr __REGEXP_25__ , {__REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) NUMBER , {__REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) ID , {__REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
+  [expr ::= __REGEXP_6__ (*) expr __REGEXP_7__ , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_1__ expr , {__REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_2__ expr , {__REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_3__ expr , {__REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_4__ expr , {__REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) __REGEXP_2__ expr , {__REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) __REGEXP_1__ expr , {__REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) __REGEXP_6__ expr __REGEXP_7__ , {__REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) NUMBER , {__REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) ID , {__REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
 }
 transition on expr to state [15]
 transition on ID to state [12]
 transition on NUMBER to state [7]
-transition on __REGEXP_24__ to state [6]
-transition on __REGEXP_20__ to state [5]
-transition on __REGEXP_19__ to state [4]
+transition on __REGEXP_6__ to state [6]
+transition on __REGEXP_2__ to state [5]
+transition on __REGEXP_1__ to state [4]
 
 -------------------
 lalr_state [7]: {
-  [expr ::= NUMBER (*) , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
+  [expr ::= NUMBER (*) , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
 }
 
 -------------------
 lalr_state [8]: {
-  [expr ::= ID (*) , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
-  [instr ::= ID (*) __REGEXP_23__ expr , {EOLN[2]}]
+  [expr ::= ID (*) , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
+  [instr ::= ID (*) __REGEXP_5__ expr , {EOLN[2]}]
 }
-transition on __REGEXP_23__ to state [16]
+transition on __REGEXP_5__ to state [16]
 
 -------------------
 lalr_state [9]: {
-  [$parenthesis1 ::= instr (*) EOLN , {EOF[1], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_24__[9], NUMBER<Integer>[11], ID<String>[12]}]
+  [$parenthesis1 ::= instr (*) EOLN , {EOF[1], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_6__[9], NUMBER<Integer>[11], ID<String>[12]}]
 }
 transition on EOLN to state [17]
 
 -------------------
 lalr_state [10]: {
-  [expr ::= expr (*) __REGEXP_19__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
-  [expr ::= expr (*) __REGEXP_20__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
-  [expr ::= expr (*) __REGEXP_21__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
-  [expr ::= expr (*) __REGEXP_22__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
+  [expr ::= expr (*) __REGEXP_1__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
+  [expr ::= expr (*) __REGEXP_2__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
+  [expr ::= expr (*) __REGEXP_3__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
+  [expr ::= expr (*) __REGEXP_4__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
   [instr ::= expr (*) , {EOLN[2]}]
 }
-transition on __REGEXP_22__ to state [21]
-transition on __REGEXP_21__ to state [20]
-transition on __REGEXP_20__ to state [19]
-transition on __REGEXP_19__ to state [18]
+transition on __REGEXP_4__ to state [21]
+transition on __REGEXP_3__ to state [20]
+transition on __REGEXP_2__ to state [19]
+transition on __REGEXP_1__ to state [18]
 
 -------------------
 lalr_state [11]: {
-  [$parenthesis1$0_many ::= $parenthesis1$0_many $parenthesis1 (*) , {EOF[1], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_24__[9], NUMBER<Integer>[11], ID<String>[12]}]
+  [$parenthesis1$0_many ::= $parenthesis1$0_many $parenthesis1 (*) , {EOF[1], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_6__[9], NUMBER<Integer>[11], ID<String>[12]}]
 }
 
 -------------------
 lalr_state [12]: {
-  [expr ::= ID (*) , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
+  [expr ::= ID (*) , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
 }
 
 -------------------
 lalr_state [13]: {
-  [expr ::= expr (*) __REGEXP_19__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= expr (*) __REGEXP_20__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= expr (*) __REGEXP_21__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= expr (*) __REGEXP_22__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= __REGEXP_19__ expr (*) , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
+  [expr ::= expr (*) __REGEXP_1__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= expr (*) __REGEXP_2__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= expr (*) __REGEXP_3__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= expr (*) __REGEXP_4__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= __REGEXP_1__ expr (*) , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
 }
-transition on __REGEXP_22__ to state [21]
-transition on __REGEXP_21__ to state [20]
-transition on __REGEXP_20__ to state [19]
-transition on __REGEXP_19__ to state [18]
+transition on __REGEXP_4__ to state [21]
+transition on __REGEXP_3__ to state [20]
+transition on __REGEXP_2__ to state [19]
+transition on __REGEXP_1__ to state [18]
 
 -------------------
 lalr_state [14]: {
-  [expr ::= expr (*) __REGEXP_19__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= expr (*) __REGEXP_20__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= expr (*) __REGEXP_21__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= expr (*) __REGEXP_22__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= __REGEXP_20__ expr (*) , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
+  [expr ::= expr (*) __REGEXP_1__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= expr (*) __REGEXP_2__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= expr (*) __REGEXP_3__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= expr (*) __REGEXP_4__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= __REGEXP_2__ expr (*) , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
 }
-transition on __REGEXP_22__ to state [21]
-transition on __REGEXP_21__ to state [20]
-transition on __REGEXP_20__ to state [19]
-transition on __REGEXP_19__ to state [18]
+transition on __REGEXP_4__ to state [21]
+transition on __REGEXP_3__ to state [20]
+transition on __REGEXP_2__ to state [19]
+transition on __REGEXP_1__ to state [18]
 
 -------------------
 lalr_state [15]: {
-  [expr ::= expr (*) __REGEXP_19__ expr , {__REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= expr (*) __REGEXP_20__ expr , {__REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= expr (*) __REGEXP_21__ expr , {__REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= expr (*) __REGEXP_22__ expr , {__REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= __REGEXP_24__ expr (*) __REGEXP_25__ , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
+  [expr ::= expr (*) __REGEXP_1__ expr , {__REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= expr (*) __REGEXP_2__ expr , {__REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= expr (*) __REGEXP_3__ expr , {__REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= expr (*) __REGEXP_4__ expr , {__REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= __REGEXP_6__ expr (*) __REGEXP_7__ , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
 }
-transition on __REGEXP_25__ to state [22]
-transition on __REGEXP_22__ to state [21]
-transition on __REGEXP_21__ to state [20]
-transition on __REGEXP_20__ to state [19]
-transition on __REGEXP_19__ to state [18]
+transition on __REGEXP_7__ to state [22]
+transition on __REGEXP_4__ to state [21]
+transition on __REGEXP_3__ to state [20]
+transition on __REGEXP_2__ to state [19]
+transition on __REGEXP_1__ to state [18]
 
 -------------------
 lalr_state [16]: {
-  [instr ::= ID __REGEXP_23__ (*) expr , {EOLN[2]}]
-  [expr ::= (*) expr __REGEXP_19__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
-  [expr ::= (*) expr __REGEXP_20__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
-  [expr ::= (*) expr __REGEXP_21__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
-  [expr ::= (*) expr __REGEXP_22__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
-  [expr ::= (*) __REGEXP_20__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
-  [expr ::= (*) __REGEXP_19__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
-  [expr ::= (*) __REGEXP_24__ expr __REGEXP_25__ , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
-  [expr ::= (*) NUMBER , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
-  [expr ::= (*) ID , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
+  [instr ::= ID __REGEXP_5__ (*) expr , {EOLN[2]}]
+  [expr ::= (*) expr __REGEXP_1__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
+  [expr ::= (*) expr __REGEXP_2__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
+  [expr ::= (*) expr __REGEXP_3__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
+  [expr ::= (*) expr __REGEXP_4__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
+  [expr ::= (*) __REGEXP_2__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
+  [expr ::= (*) __REGEXP_1__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
+  [expr ::= (*) __REGEXP_6__ expr __REGEXP_7__ , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
+  [expr ::= (*) NUMBER , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
+  [expr ::= (*) ID , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
 }
 transition on expr to state [23]
 transition on ID to state [12]
 transition on NUMBER to state [7]
-transition on __REGEXP_24__ to state [6]
-transition on __REGEXP_20__ to state [5]
-transition on __REGEXP_19__ to state [4]
+transition on __REGEXP_6__ to state [6]
+transition on __REGEXP_2__ to state [5]
+transition on __REGEXP_1__ to state [4]
 
 -------------------
 lalr_state [17]: {
-  [$parenthesis1 ::= instr EOLN (*) , {EOF[1], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_24__[9], NUMBER<Integer>[11], ID<String>[12]}]
+  [$parenthesis1 ::= instr EOLN (*) , {EOF[1], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_6__[9], NUMBER<Integer>[11], ID<String>[12]}]
 }
 
 -------------------
 lalr_state [18]: {
-  [expr ::= expr __REGEXP_19__ (*) expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_19__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_20__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_21__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_22__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) __REGEXP_20__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) __REGEXP_19__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) __REGEXP_24__ expr __REGEXP_25__ , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) NUMBER , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) ID , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
+  [expr ::= expr __REGEXP_1__ (*) expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_1__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_2__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_3__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_4__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) __REGEXP_2__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) __REGEXP_1__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) __REGEXP_6__ expr __REGEXP_7__ , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) NUMBER , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) ID , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
 }
 transition on expr to state [24]
 transition on ID to state [12]
 transition on NUMBER to state [7]
-transition on __REGEXP_24__ to state [6]
-transition on __REGEXP_20__ to state [5]
-transition on __REGEXP_19__ to state [4]
+transition on __REGEXP_6__ to state [6]
+transition on __REGEXP_2__ to state [5]
+transition on __REGEXP_1__ to state [4]
 
 -------------------
 lalr_state [19]: {
-  [expr ::= expr __REGEXP_20__ (*) expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_19__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_20__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_21__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_22__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) __REGEXP_20__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) __REGEXP_19__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) __REGEXP_24__ expr __REGEXP_25__ , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) NUMBER , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) ID , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
+  [expr ::= expr __REGEXP_2__ (*) expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_1__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_2__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_3__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_4__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) __REGEXP_2__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) __REGEXP_1__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) __REGEXP_6__ expr __REGEXP_7__ , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) NUMBER , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) ID , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
 }
 transition on expr to state [25]
 transition on ID to state [12]
 transition on NUMBER to state [7]
-transition on __REGEXP_24__ to state [6]
-transition on __REGEXP_20__ to state [5]
-transition on __REGEXP_19__ to state [4]
+transition on __REGEXP_6__ to state [6]
+transition on __REGEXP_2__ to state [5]
+transition on __REGEXP_1__ to state [4]
 
 -------------------
 lalr_state [20]: {
-  [expr ::= expr __REGEXP_21__ (*) expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_19__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_20__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_21__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_22__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) __REGEXP_20__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) __REGEXP_19__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) __REGEXP_24__ expr __REGEXP_25__ , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) NUMBER , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) ID , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
+  [expr ::= expr __REGEXP_3__ (*) expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_1__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_2__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_3__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_4__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) __REGEXP_2__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) __REGEXP_1__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) __REGEXP_6__ expr __REGEXP_7__ , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) NUMBER , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) ID , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
 }
 transition on expr to state [26]
 transition on ID to state [12]
 transition on NUMBER to state [7]
-transition on __REGEXP_24__ to state [6]
-transition on __REGEXP_20__ to state [5]
-transition on __REGEXP_19__ to state [4]
+transition on __REGEXP_6__ to state [6]
+transition on __REGEXP_2__ to state [5]
+transition on __REGEXP_1__ to state [4]
 
 -------------------
 lalr_state [21]: {
-  [expr ::= expr __REGEXP_22__ (*) expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_19__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_20__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_21__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) expr __REGEXP_22__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) __REGEXP_20__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) __REGEXP_19__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) __REGEXP_24__ expr __REGEXP_25__ , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) NUMBER , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= (*) ID , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
+  [expr ::= expr __REGEXP_4__ (*) expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_1__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_2__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_3__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) expr __REGEXP_4__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) __REGEXP_2__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) __REGEXP_1__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) __REGEXP_6__ expr __REGEXP_7__ , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) NUMBER , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= (*) ID , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
 }
 transition on expr to state [27]
 transition on ID to state [12]
 transition on NUMBER to state [7]
-transition on __REGEXP_24__ to state [6]
-transition on __REGEXP_20__ to state [5]
-transition on __REGEXP_19__ to state [4]
+transition on __REGEXP_6__ to state [6]
+transition on __REGEXP_2__ to state [5]
+transition on __REGEXP_1__ to state [4]
 
 -------------------
 lalr_state [22]: {
-  [expr ::= __REGEXP_24__ expr __REGEXP_25__ (*) , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
+  [expr ::= __REGEXP_6__ expr __REGEXP_7__ (*) , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
 }
 
 -------------------
 lalr_state [23]: {
-  [expr ::= expr (*) __REGEXP_19__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
-  [expr ::= expr (*) __REGEXP_20__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
-  [expr ::= expr (*) __REGEXP_21__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
-  [expr ::= expr (*) __REGEXP_22__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7]}]
-  [instr ::= ID __REGEXP_23__ expr (*) , {EOLN[2]}]
+  [expr ::= expr (*) __REGEXP_1__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
+  [expr ::= expr (*) __REGEXP_2__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
+  [expr ::= expr (*) __REGEXP_3__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
+  [expr ::= expr (*) __REGEXP_4__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7]}]
+  [instr ::= ID __REGEXP_5__ expr (*) , {EOLN[2]}]
 }
-transition on __REGEXP_22__ to state [21]
-transition on __REGEXP_21__ to state [20]
-transition on __REGEXP_20__ to state [19]
-transition on __REGEXP_19__ to state [18]
+transition on __REGEXP_4__ to state [21]
+transition on __REGEXP_3__ to state [20]
+transition on __REGEXP_2__ to state [19]
+transition on __REGEXP_1__ to state [18]
 
 -------------------
 lalr_state [24]: {
-  [expr ::= expr (*) __REGEXP_19__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= expr __REGEXP_19__ expr (*) , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= expr (*) __REGEXP_20__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= expr (*) __REGEXP_21__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= expr (*) __REGEXP_22__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
+  [expr ::= expr (*) __REGEXP_1__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= expr __REGEXP_1__ expr (*) , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= expr (*) __REGEXP_2__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= expr (*) __REGEXP_3__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= expr (*) __REGEXP_4__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
 }
-transition on __REGEXP_22__ to state [21]
-transition on __REGEXP_21__ to state [20]
-transition on __REGEXP_20__ to state [19]
-transition on __REGEXP_19__ to state [18]
+transition on __REGEXP_4__ to state [21]
+transition on __REGEXP_3__ to state [20]
+transition on __REGEXP_2__ to state [19]
+transition on __REGEXP_1__ to state [18]
 
 -------------------
 lalr_state [25]: {
-  [expr ::= expr (*) __REGEXP_19__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= expr (*) __REGEXP_20__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= expr __REGEXP_20__ expr (*) , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= expr (*) __REGEXP_21__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= expr (*) __REGEXP_22__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
+  [expr ::= expr (*) __REGEXP_1__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= expr (*) __REGEXP_2__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= expr __REGEXP_2__ expr (*) , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= expr (*) __REGEXP_3__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= expr (*) __REGEXP_4__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
 }
-transition on __REGEXP_22__ to state [21]
-transition on __REGEXP_21__ to state [20]
-transition on __REGEXP_20__ to state [19]
-transition on __REGEXP_19__ to state [18]
+transition on __REGEXP_4__ to state [21]
+transition on __REGEXP_3__ to state [20]
+transition on __REGEXP_2__ to state [19]
+transition on __REGEXP_1__ to state [18]
 
 -------------------
 lalr_state [26]: {
-  [expr ::= expr (*) __REGEXP_19__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= expr (*) __REGEXP_20__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= expr (*) __REGEXP_21__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= expr __REGEXP_21__ expr (*) , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= expr (*) __REGEXP_22__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
+  [expr ::= expr (*) __REGEXP_1__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= expr (*) __REGEXP_2__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= expr (*) __REGEXP_3__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= expr __REGEXP_3__ expr (*) , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= expr (*) __REGEXP_4__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
 }
-transition on __REGEXP_22__ to state [21]
-transition on __REGEXP_21__ to state [20]
-transition on __REGEXP_20__ to state [19]
-transition on __REGEXP_19__ to state [18]
+transition on __REGEXP_4__ to state [21]
+transition on __REGEXP_3__ to state [20]
+transition on __REGEXP_2__ to state [19]
+transition on __REGEXP_1__ to state [18]
 
 -------------------
 lalr_state [27]: {
-  [expr ::= expr (*) __REGEXP_19__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= expr (*) __REGEXP_20__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= expr (*) __REGEXP_21__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= expr (*) __REGEXP_22__ expr , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
-  [expr ::= expr __REGEXP_22__ expr (*) , {EOLN[2], __REGEXP_19__[4], __REGEXP_20__[5], __REGEXP_21__[6], __REGEXP_22__[7], __REGEXP_25__[10]}]
+  [expr ::= expr (*) __REGEXP_1__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= expr (*) __REGEXP_2__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= expr (*) __REGEXP_3__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= expr (*) __REGEXP_4__ expr , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
+  [expr ::= expr __REGEXP_4__ expr (*) , {EOLN[2], __REGEXP_1__[4], __REGEXP_2__[5], __REGEXP_3__[6], __REGEXP_4__[7], __REGEXP_7__[10]}]
 }
-transition on __REGEXP_22__ to state [21]
-transition on __REGEXP_21__ to state [20]
-transition on __REGEXP_20__ to state [19]
-transition on __REGEXP_19__ to state [18]
+transition on __REGEXP_4__ to state [21]
+transition on __REGEXP_3__ to state [20]
+transition on __REGEXP_2__ to state [19]
+transition on __REGEXP_1__ to state [18]
 
 -------------------
 -------- ACTION_TABLE --------

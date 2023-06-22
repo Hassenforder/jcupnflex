@@ -781,32 +781,32 @@ private Region endRegion (int targetState) {
             // fall through
           case 18: break;
           case 4:
-            { return symbol(ETerminal.__REGEXP_24__);
+            { return symbol(ETerminal.__REGEXP_6__);
             }
             // fall through
           case 19: break;
           case 5:
-            { return symbol(ETerminal.__REGEXP_25__);
+            { return symbol(ETerminal.__REGEXP_7__);
             }
             // fall through
           case 20: break;
           case 6:
-            { return symbol(ETerminal.__REGEXP_21__);
+            { return symbol(ETerminal.__REGEXP_3__);
             }
             // fall through
           case 21: break;
           case 7:
-            { return symbol(ETerminal.__REGEXP_19__);
+            { return symbol(ETerminal.__REGEXP_1__);
             }
             // fall through
           case 22: break;
           case 8:
-            { return symbol(ETerminal.__REGEXP_20__);
+            { return symbol(ETerminal.__REGEXP_2__);
             }
             // fall through
           case 23: break;
           case 9:
-            { return symbol(ETerminal.__REGEXP_22__);
+            { return symbol(ETerminal.__REGEXP_4__);
             }
             // fall through
           case 24: break;
@@ -816,7 +816,7 @@ private Region endRegion (int targetState) {
             // fall through
           case 25: break;
           case 11:
-            { return symbol(ETerminal.__REGEXP_23__);
+            { return symbol(ETerminal.__REGEXP_5__);
             }
             // fall through
           case 26: break;

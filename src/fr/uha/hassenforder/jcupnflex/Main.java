@@ -105,6 +105,7 @@ public class Main {
 	static public void main(String argv[]) {
 		Main main = new Main();
 		main.process(argv);
+		ErrorManager.getManager().flush();
 	}
 	
 }
