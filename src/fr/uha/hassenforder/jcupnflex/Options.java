@@ -119,9 +119,9 @@ public class Options {
 	 */
 	public boolean parseArgs (String argv[]) {
 		int i=0;
-		while (i < argv.length-1) {
+		while (i < argv.length) {
 			String option = argv[i];
-			String argument = argv[i+1];
+			String argument = (i < argv.length-2) ? argv[i+1] : null;
 			int used = setOption(option, argument);
 			switch (used) {
 			case 0 : return false;

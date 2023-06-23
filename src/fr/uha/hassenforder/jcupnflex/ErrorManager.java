@@ -149,7 +149,7 @@ public class ErrorManager {
 		}
 		String text = tmp.toString();
 		getMessages().add(text);
-		System.err.println(text);
+		output.println(text);
 	}
 
 	/**
