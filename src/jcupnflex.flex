@@ -12,11 +12,7 @@ import fr.uha.hassenforder.jcupnflex.model.Grammar;
 	public void setGrammar (Grammar grammar) {
 	   this.grammar = grammar;
 	}
-<<<<<<< HEAD
 
-=======
-	
->>>>>>> refs/heads/regions
 	// helpers to manage the whole code segment
 	private StringBuilder cs;
     private int csline, cscolumn;
