@@ -106,6 +106,7 @@ public class Main {
 		Main main = new Main();
 		main.process(argv);
 		ErrorManager.getManager().flush();
+		ErrorManager.clear();
 		System.err.println();;
 		
 	}

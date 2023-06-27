@@ -39,6 +39,7 @@ public class ErrorManager {
 
 	/** PrintWriter where all messages go */
 	private PrintWriter output = new PrintWriter (System.out);
+	private boolean isFile = false;
 	
 	/** counter of emitted infos */
 	private int infos = 0;
@@ -73,6 +74,7 @@ public class ErrorManager {
 	public boolean setOutput(String filename) {
 		try {
 			output = new PrintWriter (new BufferedWriter (new FileWriter(filename)));
+			isFile = true;
 			return true;
 		} catch (IOException e) {
 			return false;
@@ -81,6 +83,9 @@ public class ErrorManager {
 
 	public void flush() {
 		output.flush();
+		if (isFile) {
+			output.close();
+		}
 	}
 
 	/** clear every things just by forgetting previous singleton */
