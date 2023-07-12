@@ -266,6 +266,8 @@ public class FlexWriter extends AbstractWriter {
 	 * regexp		{ appendRegion(yytext()); } // regexp != null
 	 * [^]			{ appendRegion(yytext()); }
 	 * 
+	 * In fact if the terminal is of type void we can skip the appendRegion(yytext)); to spare space
+	 * 
 	 * where $ represent a unique name base on the terminal name with a dollar sign and the remaining text
 	 */
 	private StringBuilder writeRegionCollect(LexicalProduction terminal) {
@@ -278,9 +280,11 @@ public class FlexWriter extends AbstractWriter {
 		}
 		tmp.append("\t\t");
 		tmp.append("{ ");
-		tmp.append("appendRegion (");
-		tmp.append("yytext()");
-		tmp.append("); ");
+		if (! "void".equals(terminal.getLhs().getType())) {
+			tmp.append("appendRegion (");
+			tmp.append("yytext()");
+			tmp.append("); ");
+		}
 		tmp.append("}");
 		return tmp;
 	}
