@@ -1,1 +1,10 @@
 /bin/
+/*.log
+/src/*.log
+/src/Parser-streaming-end.cup
+/src/Scanner-streaming-end.flex
+/src/fr/uha/hassenforder/logo/
+/src/fr/uha/hassenforder/jcupnflex/reader/
+/test/
+# begin of exclude rules for generated files
+# end of exclude rules for generated files

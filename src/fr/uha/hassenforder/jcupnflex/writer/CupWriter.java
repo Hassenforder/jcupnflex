@@ -109,7 +109,13 @@ public class CupWriter extends AbstractWriter {
 			break;
 		case SYMBOL:
 			SymbolPart symbol = (SymbolPart) part;
-			tmp.append(symbol.getSymbol().getName());
+			String name = null;
+			if (symbol.getSymbol() != null && symbol.getSymbol().getName() != null) {
+				name = symbol.getSymbol().getName();
+			} else {
+				name = "XXX";
+			}
+			tmp.append(name);
 			break;
 		default:
 			break;

@@ -2,3 +2,13 @@
 /ETerminal.java
 /Parser.dump
 /Parser.java
+/Lexer.dump
+/Lexer.dump~
+/Lexer.java
+/Lexer.java~
+/dfa-big.dot
+/dfa-big.dot~
+/dfa-min.dot
+/dfa-min.dot~
+/nfa.dot
+/nfa.dot~
