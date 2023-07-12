@@ -80,29 +80,29 @@ public class FlexWriter extends AbstractWriter {
 			this.tmp = new StringBuilder();
 			this.fromLine = yyline;
 			this.fromColumn = yycolumn;
-		}
-		
+		}		
     }
 
-  private java.util.Stack<Region> regions = new java.util.Stack<>();
+   private java.util.Stack<Region> regions = new java.util.Stack<>();
 
-  private void startRegion (int state) {
-  	regions.push(new Region ());
-  	yybegin (state);
-  }
+   private void startRegion (int state) {
+      regions.push(new Region ());
+      yybegin (state);
+   }
 
-  private void appendRegion (String content) {
-	  if (! regions.empty()) {
-		  Region region = regions.peek();
-		  region.tmp.append(content);
-	  }
-  }
+   @SuppressWarnings("unused")
+   private void appendRegion (String content) {
+      if (! regions.empty()) {
+         Region region = regions.peek();
+         region.tmp.append(content);
+      }
+   }
 
-  private Region endRegion (int targetState) {
-	  Region region = null;
-	  if (! regions.empty()) {
-		  region = regions.pop();
-	  }
+   private Region endRegion (int targetState) {
+      Region region = null;
+      if (! regions.empty()) {
+         region = regions.pop();
+      }
       yybegin (targetState);
       return region;
    }
@@ -110,13 +110,13 @@ public class FlexWriter extends AbstractWriter {
    @SuppressWarnings("unused")
    private Symbol symbolRegion (Region region, ETerminal token) {
       if (region == null) {
-    	  AdvancedSymbolFactory.Location position = new AdvancedSymbolFactory.Location (yyline+1, yycolumn+yylength());
-    	  return symbolFactory.newSymbol(token, position, position, "");
+         AdvancedSymbolFactory.Location position = new AdvancedSymbolFactory.Location (yyline+1, yycolumn+yylength());
+         return symbolFactory.newSymbol(token, position, position, "");
       } else {
-    	  String content = region.tmp.toString();
-    	  AdvancedSymbolFactory.Location left = new AdvancedSymbolFactory.Location (region.fromLine+1, region.fromColumn+1);
-    	  AdvancedSymbolFactory.Location right = new AdvancedSymbolFactory.Location (yyline+1, yycolumn+yylength());
-    	  return symbolFactory.newSymbol(token, left, right, content);
+         String content = region.tmp.toString();
+         AdvancedSymbolFactory.Location left = new AdvancedSymbolFactory.Location (region.fromLine+1, region.fromColumn+1);
+         AdvancedSymbolFactory.Location right = new AdvancedSymbolFactory.Location (yyline+1, yycolumn+yylength());
+         return symbolFactory.newSymbol(token, left, right, content);
       }
   }
 				    				    """));
