@@ -41,11 +41,11 @@ import fr.uha.hassenforder.jcupnflex.model.Terminal;
 parser code {:
 
     public void report_error(String message, Object symbol) {
-		ErrorManager.getManager().emit_error(message+ " \"" + symbol + "\"");
+		ErrorManager.getManager().emit_error(message, (com.github.jhoenicke.javacup.runtime.Symbol) symbol);
     }
 
     public void report_fatal_error(String message, Object symbol) {
-		ErrorManager.getManager().emit_fatal(message+ " \"" + symbol + "\"");
+		ErrorManager.getManager().emit_fatal(message, (com.github.jhoenicke.javacup.runtime.Symbol) symbol);
     }
 
 /** 
