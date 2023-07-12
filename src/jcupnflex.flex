@@ -1,11 +1,13 @@
 import fr.uha.hassenforder.jcupnflex.ErrorManager;
 import fr.uha.hassenforder.jcupnflex.model.Grammar;
+
 %%
 
 %package fr.uha.hassenforder.jcupnflex.reader
 %class Lexer
 %public
 %cupJHMH
+
 %{
 	private Grammar grammar;
 	

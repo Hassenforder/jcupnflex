@@ -192,6 +192,8 @@ public class FlexWriter extends AbstractWriter {
 		tmp.append("{ ");
 		if (code != null) {
 			tmp.append(code);
+		} else if ("void".equals(type)){
+			// do nothing
 		} else {
 			tmp.append("return symbol(ETerminal.");
 			tmp.append(name);

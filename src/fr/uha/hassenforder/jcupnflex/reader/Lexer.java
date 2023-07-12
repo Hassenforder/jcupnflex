@@ -7,6 +7,7 @@ import fr.uha.hassenforder.jcupnflex.ErrorManager;
 import fr.uha.hassenforder.jcupnflex.model.Grammar;
 
 
+
 /* CUP jhoenicke imports */
 import com.github.jhoenicke.javacup.runtime.Symbol;
 import com.github.jhoenicke.javacup.runtime.AdvancedSymbolFactory;

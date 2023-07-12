@@ -7,4 +7,20 @@
 /src/fr/uha/hassenforder/jcupnflex/reader/
 /test/
 # begin of exclude rules for generated files
+/src/*.log
+/src/fr/uha/hassenforder/jcupnflex/reader/*.*~
+/src/fr/uha/hassenforder/jcupnflex/reader/*.dot
+/src/fr/uha/hassenforder/jcupnflex/reader/*.dump
+/src/fr/uha/hassenforder/jcupnflex/reader/ENonterminal.java
+/src/fr/uha/hassenforder/jcupnflex/reader/ETerminal.java
+/src/fr/uha/hassenforder/jcupnflex/reader/Lexer.java
+/src/fr/uha/hassenforder/jcupnflex/reader/Parser.java
+/src/fr/uha/hassenforder/logo/reader/*.*~
+/src/fr/uha/hassenforder/logo/reader/*.dot
+/src/fr/uha/hassenforder/logo/reader/*.dump
+/src/fr/uha/hassenforder/logo/reader/ENonterminal.java
+/src/fr/uha/hassenforder/logo/reader/ETerminal.java
+/src/fr/uha/hassenforder/logo/reader/Lexer.java
+/src/fr/uha/hassenforder/logo/reader/Parser.java
+/test/logo/*.log
 # end of exclude rules for generated files

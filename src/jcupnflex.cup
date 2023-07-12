@@ -14,7 +14,7 @@
   + additional rules for State sensitive regexp rules
     
   Author(s)
-	Michel Hassenforder, ENSISA, Universitï¿½ de Haute Alsace
+	Michel Hassenforder, ENSISA, Université de Haute Alsace
 	michel.hassenforder@uha.fr
 	
   Revisions
@@ -40,7 +40,17 @@ import fr.uha.hassenforder.jcupnflex.model.Terminal;
 
 parser code {:
 
-/** global variables to store the grammar the directivess and a factory to build various concepts */
+    public void report_error(String message, Object symbol) {
+		ErrorManager.getManager().emit_error(message+ " \"" + symbol + "\"");
+    }
+
+    public void report_fatal_error(String message, Object symbol) {
+		ErrorManager.getManager().emit_fatal(message+ " \"" + symbol + "\"");
+    }
+
+/** 
+ * global variables to store the grammar the directives and a factory to build various concepts
+ */ 
 	private IFactory factory;
 	private Grammar grammar;
 	private DirectiveSet directives;
@@ -101,7 +111,7 @@ action code {:
 	private GrammarSymbol getKnownSymbol(com.github.jhoenicke.javacup.runtime.Symbol location, String id) {
 		GrammarSymbol sym = getGrammar().getSymbol(id);
 		if (sym == null) {
-			ErrorManager.getManager().emit_warning("Symbol \"" + id + "\" has not been declared", location);
+			ErrorManager.getManager().emit_error("Symbol \"" + id + "\" has not been declared", location);
 		}
 		return sym;
 	}
@@ -109,7 +119,7 @@ action code {:
 	private Terminal getKnownTerminal(com.github.jhoenicke.javacup.runtime.Symbol location, String id) {
 		Terminal sym = getGrammar().getTerminal(id);
 		if (sym == null) {
-			ErrorManager.getManager().emit_warning("Terminal \"" + id + "\" has not been declared", location);
+			ErrorManager.getManager().emit_error("Terminal \"" + id + "\" has not been declared", location);
 		}
 		return sym;
 	}
@@ -117,7 +127,7 @@ action code {:
 	private NonTerminal getKnownNonTerminal(com.github.jhoenicke.javacup.runtime.Symbol location, String id) {
 		NonTerminal sym = getGrammar().getNonTerminal(id);
 		if (sym == null) {
-			ErrorManager.getManager().emit_warning("Non terminal \"" + id + "\" has not been declared", location);
+			ErrorManager.getManager().emit_error("Non terminal \"" + id + "\" has not been declared", location);
 		}
 		return sym;
 	}
@@ -125,7 +135,7 @@ action code {:
 	private State getKnownState(com.github.jhoenicke.javacup.runtime.Symbol location, String id) {
 		State sym = getGrammar().getState(id);
 		if (sym == null) {
-			ErrorManager.getManager().emit_warning("State \"" + id + "\" has not been declared", location);
+			ErrorManager.getManager().emit_error("State \"" + id + "\" has not been declared", location);
 		}
 		return sym;
 	}
@@ -335,6 +345,9 @@ start_spec			::=	START WITH symbol_id:name
 production_spec		::=	lhs_nonterminal COLON_COLON_EQUALS rhs_nonterminal_list
 					|	lhs_terminal COLON_COLON_EQUALS rhs_terminal_list
 					|	lhs_state COLON_COLON_EQUALS rhs_state_list
+					|	ID:name
+							{: ErrorManager.getManager().emit_error("Symbol \"" + name + "\" is not declared for production rule", name$); :} 
+						error
 					;
 
 lhs_nonterminal		::=	SYMBOL_NONTERMINAL:lhs_id {: updateLhs(getKnownNonTerminal(lhs_id$, lhs_id)); :} 
