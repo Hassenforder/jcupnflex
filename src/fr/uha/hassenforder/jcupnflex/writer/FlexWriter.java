@@ -191,7 +191,19 @@ public class FlexWriter extends AbstractWriter {
 		StringBuilder tmp = new StringBuilder();
 		tmp.append("{ ");
 		if (code != null) {
-			tmp.append(code);
+			if (code.contains("RESULT")) {
+				int position = code.indexOf("RESULT");
+				tmp.append(code.substring(0, position));
+				tmp.append(" ");
+				tmp.append(type);
+				tmp.append(" ");
+				tmp.append(code.substring(position));
+				tmp.append("return symbol(ETerminal.");
+				tmp.append(name);
+				tmp.append(", RESULT);");
+			} else {
+				tmp.append(code);
+			}
 		} else if ("void".equals(type)){
 			// do nothing
 		} else {
