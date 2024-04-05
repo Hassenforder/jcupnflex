@@ -242,8 +242,14 @@ public class CupWriter extends AbstractWriter {
 	}
 
 	private void emitOptions() {
-		// TODO Auto-generated method stub
-		
+		Map<String, String> options = directives.getKeyedValues(Directive.OPTION);
+		if (options == null) return;
+		if (! options.containsKey("mode")) return;
+		String mode = options.get("mode");
+		if ("STD".equals(mode)) { }
+		if ("LSP".equals(mode)) {
+			appendLine("option mode = CST;");
+		}
 	}
 
 	private void emitCupCodes() {
@@ -275,8 +281,7 @@ public class CupWriter extends AbstractWriter {
 		if (!open())
 			return;
 		
-		if(ErrorManager.getManager().getFatalCount() == 0 && ErrorManager.getManager().getErrorCount() == 0)
-		{
+		if (ErrorManager.getManager().getFatalCount() == 0 && ErrorManager.getManager().getErrorCount() == 0) {
 			emitPackage ();
 			newLine();
 			emitImports ();

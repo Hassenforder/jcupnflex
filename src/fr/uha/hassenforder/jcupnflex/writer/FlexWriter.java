@@ -51,6 +51,17 @@ public class FlexWriter extends AbstractWriter {
 		appendLine(writeProperty ("%cupJHMH", ""));
 	}
 
+	private void emitOptions() {
+		Map<String, String> options = directives.getKeyedValues(Directive.OPTION);
+		if (options == null) return;
+		if (! options.containsKey("mode")) return;
+		String mode = options.get("mode");
+		if ("STD".equals(mode)) { }
+		if ("LSP".equals(mode)) {
+			appendLine("%mode MAP");
+		}
+	}
+
 	/**
 	 * we have to emit the code proposed by the user but also all buffers used by region
 	 * 
@@ -465,6 +476,8 @@ public class FlexWriter extends AbstractWriter {
 			appendLine("%%");
 			newLine ();
 			emitHeader ();
+			newLine ();
+			emitOptions ();
 			newLine ();
 			emitFlexCodes ();
 			newLine ();
