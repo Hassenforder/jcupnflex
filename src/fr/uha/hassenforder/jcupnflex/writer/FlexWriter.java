@@ -402,7 +402,7 @@ public class FlexWriter extends AbstractWriter {
 			newLine();
 		}
 		newLine();
-		appendLine("[^]\t\t\t { fallback(); }");
+		appendLine("[^]\t\t\t { return fallback(); }");
 	}
 
 	private int count(String regexp, char c) {

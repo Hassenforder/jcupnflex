@@ -14,6 +14,7 @@
 /src/fr/uha/hassenforder/javacup/sample/jmusic/reader/ENonterminal.java
 /src/fr/uha/hassenforder/javacup/sample/jmusic/reader/ETerminal.java
 /src/fr/uha/hassenforder/javacup/sample/jmusic/reader/Lexer.java
+/src/fr/uha/hassenforder/javacup/sample/jmusic/reader/Mappings.java
 /src/fr/uha/hassenforder/javacup/sample/jmusic/reader/Parser.java
 /src/fr/uha/hassenforder/jcupnflex/reader/*.*~
 /src/fr/uha/hassenforder/jcupnflex/reader/*.dot
@@ -21,6 +22,7 @@
 /src/fr/uha/hassenforder/jcupnflex/reader/ENonterminal.java
 /src/fr/uha/hassenforder/jcupnflex/reader/ETerminal.java
 /src/fr/uha/hassenforder/jcupnflex/reader/Lexer.java
+/src/fr/uha/hassenforder/jcupnflex/reader/Mappings.java
 /src/fr/uha/hassenforder/jcupnflex/reader/Parser.java
 /src/fr/uha/hassenforder/logo/reader/*.*~
 /src/fr/uha/hassenforder/logo/reader/*.dot

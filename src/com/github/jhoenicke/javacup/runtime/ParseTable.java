@@ -26,7 +26,7 @@ public final class ParseTable {
 	 * @param state the state index of the action being accessed.
 	 * @param sym   the Symbol index of the action being accessed.
 	 */
-	final short getAction(int state, int sym) {
+	public final short getAction(int state, int sym) {
 		int base = base_table[state] + 2 * sym;
 		if (action_table[base] == state)
 			return action_table[base + 1];
@@ -40,7 +40,7 @@ public final class ParseTable {
 	 * @param state the state index of the entry being accessed.
 	 * @param sym   the Symbol index of the entry being accessed.
 	 */
-	final short getReduce(int state, int sym) {
+	public final short getReduce(int state, int sym) {
 		return reduce_table[reduce_table[state] + sym];
 	}
 

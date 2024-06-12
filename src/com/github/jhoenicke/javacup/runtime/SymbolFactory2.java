@@ -1,5 +1,7 @@
 package com.github.jhoenicke.javacup.runtime;
 
+import java.util.List;
+
 /**
  * Creates the Symbols interface, which CUP uses as default
  *
@@ -14,14 +16,26 @@ package com.github.jhoenicke.javacup.runtime;
  * 
  * Interface SymbolFactory2
  * 
- * an interface for creating new symbols based on Enum
+ * an interface for creating new symbols based on Enum (12 june 2022)
+ * extended to store the lust of child symbols to propagate the whole concrete syntax tree (25 march 2024)
  *
  ***************************************************/
 public interface SymbolFactory2 {
 
 	/*
-	 * new API for all Factories but not Advanced
+	 * new API for all Factories
 	 */
+
+	/**
+	 * Construction with child propagation switched on
+	 * Strongly used by the generated Parser to build nonterminals during reduce actions
+	 * 
+	 * @param token an enum to represent the symbol (mainly Nonterminal)
+	 * @param children  the child symbols of the rule
+	 * 
+	 * @return a symbol
+	 */
+	public Symbol newSymbol(Enum<?> token, List<Symbol> children);
 
 	/**
 	 * Construction with left/right propagation switched on and a value
@@ -31,6 +45,7 @@ public interface SymbolFactory2 {
 	 * @param left  the leftmost symbol of the rule
 	 * @param right	the rightmost symbol of the rule
 	 * @param value a semantic value an object of an arbitrary Class
+	 * 
 	 * @return a symbol
 	 */
 	public Symbol newSymbol(Enum<?> token, Symbol left, Symbol right, Object value);
@@ -42,6 +57,7 @@ public interface SymbolFactory2 {
 	 * @param token an enum to represent the symbol (mainly Nonterminal)
 	 * @param left  the leftmost symbol of the rule
 	 * @param right	the rightmost symbol of the rule
+	 * 
 	 * @return a symbol
 	 */
 	public Symbol newSymbol(Enum<?> token, Symbol left, Symbol right);
@@ -52,6 +68,7 @@ public interface SymbolFactory2 {
 	 * 
 	 * @param token an enum to represent the symbol (mainly Terminal)
 	 * @param value a semantic value an object of an arbitrary Class
+	 * 
 	 * @return a symbol
 	 */
 	public Symbol newSymbol(Enum<?> token, Object value);
@@ -61,12 +78,15 @@ public interface SymbolFactory2 {
 	 * Strongly used by the scanner to build terminals
 	 * 
 	 * @param token an enum to represent the symbol (mainly Terminal)
+	 * 
 	 * @return a symbol
 	 */
 	public Symbol newSymbol(Enum<?> token);
 
 	/**
 	 * Construction of a start symbol
+	 * 
+	 * @return a symbol
 	 */
 	public Symbol startSymbol();
 
@@ -82,6 +102,7 @@ public interface SymbolFactory2 {
 	 * 
 	 * @param left the leftmost symbol of the rule
 	 * @param right the rightmost symbol of the rule
+	 * 
 	 * @return the symbol of the grammar
 	 */
 	public Symbol errorSymbol(Symbol left, Symbol right);
